@@ -1,104 +1,8 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Quiz Guarda Civil — App</title>
-<style>
-  :root{--bg1:#0f3b6b;--bg2:#1f6fb0;--card-bg:rgba(255,255,255,0.06);--muted:rgba(255,255,255,0.92);--accent:#00ff9d;--card-scale:1.15}
-  html,body{height:100%;margin:0;padding:0}
-  body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;display:flex;align-items:center;justify-content:center;padding:12px}
-  .app{width:100%;max-width:920px;display:flex;flex-direction:column;gap:12px}
-  .card{background:var(--card-bg);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.28);backdrop-filter:blur(6px);transform:scale(var(--card-scale))}
-  .header{display:flex;justify-content:space-between;align-items:center;gap:10px}.title{font-size:clamp(18px,4vw,22px);margin:0}.subtitle{font-size:13px;color:#e6f7f0;margin-top:6px}
-  .controls{display:flex;gap:8px;align-items:center}.btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
-  .icon-btn{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#fff;cursor:pointer}.scale-label{min-width:62px;text-align:center;font-weight:800}
-  .pages{min-height:340px}.page{display:none}.page.active{display:block}
-  .welcome{font-size:18px;margin:6px 0 12px 0;color:var(--muted)}.home-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}.study-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-  .progress{display:flex;align-items:center;gap:12px;margin-bottom:10px}.track{flex:1;height:12px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden}.bar{height:12px;width:0;background:linear-gradient(90deg,rgba(0,255,157,.95),rgba(0,214,138,.95));transition:width .45s ease;border-radius:999px}
-  .question{margin:12px 0;font-size:18px;color:var(--muted);white-space:pre-wrap}.opts{display:grid;gap:10px;grid-template-columns:1fr 1fr}
-  button.opt{padding:14px;min-height:62px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#fff;color:#123;font-weight:800;cursor:pointer;text-align:left}
-  .explain{margin-top:12px;padding:12px;background:rgba(255,255,255,.04);border-radius:10px;color:#fff}.tabs{display:flex;justify-content:space-around;gap:6px;margin-top:8px}
-  .tabbtn{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#fff;font-weight:800;cursor:pointer;text-align:center}.tabbtn.active{background:rgba(255,255,255,.06)}
-  .small{font-size:13px;color:#dfeff5}.topic-select{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.next-area{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap}
-  .next-btn{background:linear-gradient(90deg,var(--accent),#2fb6ff);border:none;color:#012;font-weight:900;padding:12px 16px;border-radius:12px;cursor:pointer;font-size:16px}.next-btn.small-btn{padding:8px 12px;font-size:14px;border-radius:10px}
-  .card-small{padding:10px;border-radius:10px;background:rgba(255,255,255,.03);margin-bottom:8px}.flashcard{perspective:1000px;cursor:pointer}.flash-inner{transition:transform .5s;transform-style:preserve-3d;position:relative;min-height:120px}
-  .flash-front,.flash-back{backface-visibility:hidden;position:absolute;inset:0;border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:center}.flash-back{transform:rotateY(180deg);background:rgba(0,0,0,.12);color:#fff}.flash-inner.flipped{transform:rotateY(180deg)}
-</style>
-</head>
-<body>
-<div class="app">
-  <div class="card header" id="cardHeader">
-    <div>
-      <h1 class="title">Quiz Guarda Civil 👮‍♂️</h1>
-      <div class="subtitle">Estude por tópicos</div>
-    </div>
-    <div class="controls">
-      <button class="icon-btn" id="scaleDownBtn">A−</button>
-      <div class="scale-label" id="scaleLabel">x1.15</div>
-      <button class="icon-btn" id="scaleUpBtn">A+</button>
-      <button class="icon-btn" id="fullscreenBtn">⛶</button>
-      <button class="btn" id="soundToggle">🔊 Som: On</button>
-    </div>
-  </div>
-
-  <div class="card pages" id="pages">
-    <section id="home" class="page active">
-      <div class="welcome">Olá! Escolha um tópico e inicie o quiz quando estiver pronto.</div>
-      <div class="home-actions">
-        <button class="btn" onclick="go('study')">📘 Estudar</button>
-        <button class="btn" onclick="go('quiz')">🎯 Fazer Quiz</button>
-        <button class="btn" onclick="go('cards')">🃏 Cartões</button>
-      </div>
-      <div style="margin-top:12px"><div id="bestRecord" class="small">Carregando recorde...</div></div>
-    </section>
-
-    <section id="study" class="page">
-      <h3>Conteúdos de Estudo</h3>
-      <div id="studyList" class="study-list"></div>
-    </section>
-
-    <section id="quiz" class="page">
-      <div class="topic-select">
-        <div class="average">Escolha o Tópico:</div>
-        <select id="topicSelect" class="average"></select>
-        <button class="next-btn small-btn" id="loadTopicBtn">Carregar tópico</button>
-        <div style="flex:1"></div>
-        <div class="small">Questões por rodada: <strong id="quizSizeLabel"></strong></div>
-      </div>
-
-      <div class="progress"><div class="track"><div class="bar" id="bar"></div></div><div class="small" id="progressInfo">0 / 0</div></div>
-      <div class="question" id="question">Aguardando escolha do tópico...</div>
-      <div class="opts" id="opts"></div>
-      <div class="explain" id="explain" style="display:none"></div>
-
-      <div class="next-area">
-        <div id="progressText" class="small"></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" id="btnRestart" style="display:none">🔄 Reiniciar</button>
-          <button class="next-btn" id="nextBtn" disabled>Próxima ➜</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="cards" class="page">
-      <h3>Cartões (clique para virar)</h3>
-      <div id="cardsContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;"></div>
-    </section>
-  </div>
-
-  <div class="tabs card" role="navigation" aria-label="Navegação">
-    <button class="tabbtn active" data-target="home" onclick="go('home')">Início</button>
-    <button class="tabbtn" data-target="study" onclick="go('study')">Estudo</button>
-    <button class="tabbtn" data-target="quiz" onclick="go('quiz')">Quiz</button>
-    <button class="tabbtn" data-target="cards" onclick="go('cards')">Cartões</button>
-  </div>
-</div>
-
 <script>
 /* ===================== CONFIGURE AQUI ===================== */
 /* Cole a URL do seu Web App (Apps Script) aqui — deve terminar em /exec */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0WoEC9RJ7dE_K3-7TeuwHYYMKI_Mp2Aw68OxSipxzWS5RVs4mjwaL_i508Z08654Plw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhzApaFUfKCrRu2XCFZkjUNyxQ23NFm3YbFZNDMaf_wTYsliyB8nhmiO-rOvSTrmQrJg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhzApaFUfKCrRu2XCFZkjUNyxQ23NFm3YbFZNDMaf_wTYsliyB8nhmiO-rOvSTrmQrJg/exec';
 const QUIZ_SIZE = 20; // quantas questões por rodada (padrão)
 /* ========================================================= */
 
@@ -112,19 +16,19 @@ function q_answer_letter(q){ const a = (q.resposta || q.answer || q.Resposta || 
 function q_option(q, letter){ const up = q[letter.toUpperCase()]; if (up !== undefined && up !== null && up !== '') return up; const low = q[letter.toLowerCase()]; if (low !== undefined && low !== null && low !== '') return low; return ''; }
 
 async function apiFetch(action, params = {}){
-  if (!SCRIPT_URL || SCRIPT_URL.indexOf('REPLACE_WITH') !== -1) {
-    return { ok:false, error: 'SCRIPT_URL not set. Edit index.html and set your Web App URL.' };
-  }
-  const url = new URL(SCRIPT_URL);
-  url.searchParams.set('action', action);
-  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-  try {
-    const r = await fetch(url.toString(), { cache: 'no-store' });
-    const j = await r.json();
-    return j;
-  } catch(e){
-    return { ok:false, error: String(e) };
-  }
+if (!SCRIPT_URL || SCRIPT_URL.indexOf('REPLACE_WITH') !== -1) {
+return { ok:false, error: 'SCRIPT_URL not set. Edit index.html and set your Web App URL.' };
+}
+const url = new URL(SCRIPT_URL);
+url.searchParams.set('action', action);
+Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+try {
+const r = await fetch(url.toString(), { cache: 'no-store' });
+const j = await r.json();
+return j;
+} catch(e){
+return { ok:false, error: String(e) };
+}
 }
 
 /* DOM refs */
@@ -146,78 +50,78 @@ nextBtn.addEventListener('click', ()=> { if(!quizStarted) return; currentIndex++
 btnRestart.addEventListener('click', ()=> restartQuiz());
 
 function go(target){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(target).classList.add('active');
-  document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
-  if (target === 'study') renderStudies();
-  if (target === 'cards') renderCards();
-  if (target === 'quiz') if (!quizStarted) showTopicSelection();
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(target).classList.add('active');
+document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
+if (target === 'study') renderStudies();
+if (target === 'cards') renderCards();
+if (target === 'quiz') if (!quizStarted) showTopicSelection();
 }
 
 async function showTopicSelection(){
-  const res = await apiFetch('getTopics');
-  const topics = (res && res.topics) ? res.topics : [];
-  populateTopicSelect(topics);
+const res = await apiFetch('getTopics');
+const topics = (res && res.topics) ? res.topics : [];
+populateTopicSelect(topics);
 }
 
 function populateTopicSelect(topics){
-  topicSelect.innerHTML = '';
-  const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll);
-  (topics || []).forEach(t => {
-    const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o);
-  });
+topicSelect.innerHTML = '';
+const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll);
+(topics || []).forEach(t => {
+const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o);
+});
 }
 
 async function loadTopicQuestions(topic){
-  qEl.innerText = 'Carregando perguntas...';
-  const res = await apiFetch('getQuestionsByTopic', { topic: topic || 'Todos' });
-  let data = (res && res.questions) ? res.questions : [];
-  // fallback para getAllQuestions caso o endpoint não retorne
-  if (!data.length) {
-    const res2 = await apiFetch('getAllQuestions');
-    data = (res2 && res2.questions) ? res2.questions : [];
-  }
-  // shuffle e cortar para QUIZ_SIZE
-  for (let i=data.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [data[i],data[j]]=[data[j],data[i]]; }
-  POOL = data.slice(0, QUIZ_SIZE || 20);
-  currentIndex = 0; score = 0; quizStarted = true; btnRestart.style.display = 'none';
-  renderQuestion();
+qEl.innerText = 'Carregando perguntas...';
+const res = await apiFetch('getQuestionsByTopic', { topic: topic || 'Todos' });
+let data = (res && res.questions) ? res.questions : [];
+// fallback para getAllQuestions caso o endpoint não retorne
+if (!data.length) {
+const res2 = await apiFetch('getAllQuestions');
+data = (res2 && res2.questions) ? res2.questions : [];
+}
+// shuffle e cortar para QUIZ_SIZE
+for (let i=data.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [data[i],data[j]]=[data[j],data[i]]; }
+POOL = data.slice(0, QUIZ_SIZE || 20);
+currentIndex = 0; score = 0; quizStarted = true; btnRestart.style.display = 'none';
+renderQuestion();
 }
 
 function renderQuestion(){
-  explainEl.style.display = 'none';
-  nextBtn.disabled = true;
-  if (!POOL || POOL.length === 0){ qEl.innerText='Nenhuma questão disponível.'; optsDiv.innerHTML=''; progressBar.style.width='0%'; progressInfo.innerText='0 / 0'; return; }
-  if (currentIndex >= POOL.length){ finishQuiz(); return; }
-  const q = POOL[currentIndex];
-  qEl.innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
-  optsDiv.innerHTML = '';
-  ['A','B','C','D'].forEach(letter=>{
-    const txt = q_option(q, letter);
-    if (!txt) return;
-    const btn = document.createElement('button'); btn.className='opt'; btn.id='opt_'+letter; btn.innerText=`${letter}) ${txt}`; btn.onclick = ()=> selectOption(letter);
-    optsDiv.appendChild(btn);
-  });
-  updateProgressUI();
+explainEl.style.display = 'none';
+nextBtn.disabled = true;
+if (!POOL || POOL.length === 0){ qEl.innerText='Nenhuma questão disponível.'; optsDiv.innerHTML=''; progressBar.style.width='0%'; progressInfo.innerText='0 / 0'; return; }
+if (currentIndex >= POOL.length){ finishQuiz(); return; }
+const q = POOL[currentIndex];
+qEl.innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
+optsDiv.innerHTML = '';
+['A','B','C','D'].forEach(letter=>{
+const txt = q_option(q, letter);
+if (!txt) return;
+const btn = document.createElement('button'); btn.className='opt'; btn.id='opt_'+letter; btn.innerText=`${letter}) ${txt}`; btn.onclick = ()=> selectOption(letter);
+optsDiv.appendChild(btn);
+});
+updateProgressUI();
 }
 
 function selectOption(letter){
-  if (!quizStarted) return;
-  const q = POOL[currentIndex];
-  const correct = q_answer_letter(q);
-  const chosen = letter.toUpperCase();
-  document.querySelectorAll('.opt').forEach(el => el.disabled = true);
-  if (correct){
-    const elc = document.getElementById('opt_'+correct); if (elc) elc.classList.add('correct');
-  }
-  const elChosen = document.getElementById('opt_'+chosen);
-  if (elChosen){
-    if (chosen === correct){ elChosen.classList.add('correct'); score++; }
-    else { elChosen.classList.add('wrong'); }
-  }
-  const title = (chosen === correct) ? '✅ Correto!' : ('❌ Errado! Resposta: ' + (correct || '—'));
-  showExplanation(title, q_expl(q));
-  nextBtn.disabled = false;
+if (!quizStarted) return;
+const q = POOL[currentIndex];
+const correct = q_answer_letter(q);
+const chosen = letter.toUpperCase();
+document.querySelectorAll('.opt').forEach(el => el.disabled = true);
+if (correct){
+const elc = document.getElementById('opt_'+correct); if (elc) elc.classList.add('correct');
+}
+const elChosen = document.getElementById('opt_'+chosen);
+if (elChosen){
+if (chosen === correct){ elChosen.classList.add('correct'); score++; }
+else { elChosen.classList.add('wrong'); }
+}
+const title = (chosen === correct) ? '✅ Correto!' : ('❌ Errado! Resposta: ' + (correct || '—'));
+showExplanation(title, q_expl(q));
+nextBtn.disabled = false;
 }
 
 function showExplanation(title, explanation){ explainEl.style.display='block'; explainEl.innerHTML = `<strong>${title}</strong><div style="margin-top:8px;color:#dfeff5">${explanation||''}</div>`; }
@@ -229,20 +133,20 @@ function finishQuiz(){ quizStarted=false; const total=POOL.length||1; const pct=
 function restartQuiz(){ if (topicSelect && topicSelect.value) loadTopicQuestions(topicSelect.value); else loadTopicQuestions('Todos'); }
 
 async function renderStudies(){
-  const container = document.getElementById('studyList'); container.innerHTML='';
-  const res = await apiFetch('getStudies');
-  const list = (res && res.studies) ? res.studies : [];
-  if (!list.length) { container.innerHTML='<div class="small">Nenhum conteúdo de estudo.</div>'; return; }
-  list.forEach((s,i)=>{ const d=document.createElement('details'); d.className='summary'; const sum=document.createElement('summary'); sum.innerText = s.topico || `Tópico ${i+1}`; d.appendChild(sum); const div=document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5'; div.innerHTML=(s.conteudo||'').toString().replace(/\n/g,'<br>'); d.appendChild(div); container.appendChild(d); });
+const container = document.getElementById('studyList'); container.innerHTML='';
+const res = await apiFetch('getStudies');
+const list = (res && res.studies) ? res.studies : [];
+if (!list.length) { container.innerHTML='<div class="small">Nenhum conteúdo de estudo.</div>'; return; }
+list.forEach((s,i)=>{ const d=document.createElement('details'); d.className='summary'; const sum=document.createElement('summary'); sum.innerText = s.topico || `Tópico ${i+1}`; d.appendChild(sum); const div=document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5'; div.innerHTML=(s.conteudo||'').toString().replace(/\n/g,'<br>'); d.appendChild(div); container.appendChild(d); });
 }
 
 async function renderCards(){
-  const container = document.getElementById('cardsContainer'); container.innerHTML='';
-  const res = await apiFetch('getAllQuestions');
-  const list = (res && res.questions) ? res.questions : [];
-  if (!list.length){ container.innerHTML='<div class="small">Nenhum cartão disponível.</div>'; return; }
-  for (let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-  list.forEach(q=>{ const wrapper=document.createElement('div'); wrapper.className='flashcard card-small'; const inner=document.createElement('div'); inner.className='flash-inner'; const front=document.createElement('div'); front.className='flash-front'; const back=document.createElement('div'); back.className='flash-back'; front.innerHTML=`<div style="font-size:12px;color:#dfeff5">${q_topic(q)||''}</div><div style="font-weight:800;margin-top:8px">${q_text(q)}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver explicação</div>`; back.innerHTML=`<div style="font-size:12px;color:#dfeff5">${q_topic(q)||''}</div><div style="font-weight:800;margin-top:8px">Resposta: ${q_answer_letter(q)||'—'}</div><div style="margin-top:8px;color:#dfeff5">${q_expl(q)||''}</div>`; inner.appendChild(front); inner.appendChild(back); wrapper.appendChild(inner); wrapper.addEventListener('click', ()=> inner.classList.toggle('flipped')); container.appendChild(wrapper); });
+const container = document.getElementById('cardsContainer'); container.innerHTML='';
+const res = await apiFetch('getAllQuestions');
+const list = (res && res.questions) ? res.questions : [];
+if (!list.length){ container.innerHTML='<div class="small">Nenhum cartão disponível.</div>'; return; }
+for (let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+list.forEach(q=>{ const wrapper=document.createElement('div'); wrapper.className='flashcard card-small'; const inner=document.createElement('div'); inner.className='flash-inner'; const front=document.createElement('div'); front.className='flash-front'; const back=document.createElement('div'); back.className='flash-back'; front.innerHTML=`<div style="font-size:12px;color:#dfeff5">${q_topic(q)||''}</div><div style="font-weight:800;margin-top:8px">${q_text(q)}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver explicação</div>`; back.innerHTML=`<div style="font-size:12px;color:#dfeff5">${q_topic(q)||''}</div><div style="font-weight:800;margin-top:8px">Resposta: ${q_answer_letter(q)||'—'}</div><div style="margin-top:8px;color:#dfeff5">${q_expl(q)||''}</div>`; inner.appendChild(front); inner.appendChild(back); wrapper.appendChild(inner); wrapper.addEventListener('click', ()=> inner.classList.toggle('flipped')); container.appendChild(wrapper); });
 }
 
 /* local record */
