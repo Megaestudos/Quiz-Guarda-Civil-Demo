@@ -1,4 +1,4 @@
-<!-- Index.html — pronto para GitHub Pages, já apontando para sua API /exec -->
+<!-- Index.html — pronto para GitHub Pages (com ajustes: escala inicial 1.10, título nowrap, estudos linkáveis) -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,26 +7,12 @@
   <title>Quiz Guarda Civil — App</title>
   <meta name="theme-color" content="#1e3c72"/>
   <style>
-   :root{
-  --bg1:#0f3b6b; --bg2:#1f6fb0;
-  --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92);
-  --accent: #00ff9d;
-  --card-scale: 1.10; /* mudou para iniciar em x1.10 */
-}
-
-/* garante que o cabeçalho não force quebra do título no mobile */
-.header > div:first-child { min-width: 0; } /* permite encolher corretamente */
-.title {
-  white-space: nowrap;         /* não quebra linha dentro do título */
-  overflow: hidden;            /* evita overflow */
-  text-overflow: ellipsis;     /* mostra "..." se faltar espaço */
-}
-
-/* opcional: reduz um pouco o tamanho do título em telas bem pequenas */
-@media (max-width:420px){
-  .title { font-size:16px; } 
-}
-
+    :root{
+      --bg1:#0f3b6b; --bg2:#1f6fb0;
+      --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92);
+      --accent: #00ff9d;
+      --card-scale: 1.10; /* inicia em x1.10 */
+    }
     html,body{height:100%;margin:0;padding:0}
     body{
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
@@ -37,7 +23,8 @@
     .app { width:100%; max-width:920px; display:flex; flex-direction:column; gap:12px; }
     .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); backdrop-filter: blur(6px); transform: scale(var(--card-scale)); transform-origin: top center; transition: transform .12s ease; }
     .header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .title { font-size: clamp(18px,4vw,22px); margin:0; }
+    .header > div:first-child { min-width: 0; } /* ajuda o título a encolher corretamente */
+    .title { font-size: clamp(18px,4vw,22px); margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .subtitle { font-size:13px; color:#e6f7f0; margin-top:6px; }
     .controls { display:flex; gap:8px; align-items:center; }
     .btn { background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:8px 10px;border-radius:10px;font-weight:700; cursor:pointer; }
@@ -80,6 +67,9 @@
     .flash-front { background:rgba(255,255,255,0.02); color:#fff; }
     .flash-back { transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; }
     .flash-inner.flipped { transform: rotateY(180deg); }
+    @media (max-width:420px){
+      .title { font-size:16px; } 
+    }
     @media (max-width:520px){ .opts{ grid-template-columns:1fr; } .title{font-size:18px;} }
   </style>
 </head>
@@ -174,16 +164,14 @@
 
 <script>
   /* ===================== CONFIGURE AQUI ===================== */
-  // URL pública do seu Web App (Apps Script) - já configurada pra você:
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwol4rmJsUOjRV7kzi5KA-nUOHs7X4-NGxBXU_Gx4qFV9b4nTNEMh4max9IKRr9QUe0Tg/exec';
 
-  // Fallbacks (quando não houver template injetado)
   const TEMPLATE_QUESTIONS = null;
   const TEMPLATE_STUDIES = [];
   const TEMPLATE_QUIZ_SIZE = 20;
 
   // Estado
-  let POOL = [];            // perguntas carregadas
+  let POOL = [];
   let currentIndex = 0;
   let score = 0;
   let errors = [];
@@ -220,15 +208,28 @@
     return '';
   }
 
-  /***** ----------------- Scale controls -----------------*****/
- function readSavedScale(){
-  const s = parseFloat(localStorage.getItem(SCALE_KEY));
-  if (!isNaN(s)) return Math.max(scaleMin, Math.min(scaleMax, s));
-  // se não houver escala salva, retorna a --card-scale do CSS (que agora é 1.10)
-  const css = getComputedStyle(document.documentElement).getPropertyValue('--card-scale');
-  return parseFloat(css) || 1.10;
-}
+  /* linkify: transforma URLs em <a> clicáveis (com escape básico) */
+  function linkify(text){
+    if (!text) return '';
+    // escape básico
+    let out = text.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // http/https
+    const urlPattern = /(\bhttps?:\/\/[^\s<]+[^\s<.,;:!?])/gi;
+    // www.
+    const wwwPattern = /(^|[^\/])(www\.[^\s<]+[^\s<.,;:!?])/gi;
+    out = out.replace(urlPattern, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+    out = out.replace(wwwPattern, '$1<a href="http://$2" target="_blank" rel="noopener noreferrer">$2</a>');
+    out = out.replace(/\n/g, '<br>');
+    return out;
+  }
 
+  /***** ----------------- Scale controls -----------------*****/
+  function readSavedScale(){
+    const s = parseFloat(localStorage.getItem(SCALE_KEY));
+    if (!isNaN(s)) return Math.max(scaleMin, Math.min(scaleMax, s));
+    const css = getComputedStyle(document.documentElement).getPropertyValue('--card-scale');
+    return parseFloat(css) || 1.10;
+  }
   function setScale(v){
     v = Math.max(scaleMin, Math.min(scaleMax, Number(v)));
     document.documentElement.style.setProperty('--card-scale', v.toFixed(2));
@@ -283,7 +284,7 @@
     if (target === 'quiz') { if (!quizStarted) showTopicSelection(); }
   }
 
-  /***** ----------------- STUDIES (fetch) -----------------*****/
+  /***** ----------------- STUDIES (fetch + linkify) -----------------*****/
   async function renderStudies(){
     const container = document.getElementById('studyList');
     container.innerHTML = '';
@@ -295,7 +296,8 @@
           const d = document.createElement('details'); d.className='summary';
           const sum = document.createElement('summary'); sum.innerText = s.topico || `Tópico ${i+1}`; d.appendChild(sum);
           const div = document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5';
-          div.innerHTML = (s.conteudo || '').toString().replace(/\n/g,'<br>');
+          // usa linkify para transformar URLs em links clicáveis
+          div.innerHTML = linkify(s.conteudo || '');
           d.appendChild(div); container.appendChild(d);
         });
         return;
@@ -312,7 +314,7 @@
       const d = document.createElement('details'); d.className='summary';
       const sum = document.createElement('summary'); sum.innerText = s.topico || `Tópico ${i+1}`; d.appendChild(sum);
       const div = document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5';
-      div.innerHTML = (s.conteudo || '').toString().replace(/\n/g,'<br>');
+      div.innerHTML = linkify(s.conteudo || '');
       d.appendChild(div); container.appendChild(d);
     });
   }
@@ -321,7 +323,6 @@
   const quizSizeLabel = document.getElementById('quizSizeLabel');
   quizSizeLabel.innerText = TEMPLATE_QUIZ_SIZE || 20;
 
-  // UI elements
   const topicSelect = document.getElementById('topicSelect');
   const loadTopicBtn = document.getElementById('loadTopicBtn');
   const nextBtn = document.getElementById('nextBtn');
@@ -334,7 +335,7 @@
   const btnRestart = document.getElementById('btnRestart');
 
   loadTopicBtn.addEventListener('click', ()=> loadTopicQuestions(topicSelect.value));
-  nextBtn.addEventListener('click', ()=> { // próxima questão manualmente
+  nextBtn.addEventListener('click', ()=> {
     if (!quizStarted) return;
     currentIndex++;
     renderQuestion();
@@ -408,7 +409,6 @@
     qEl.style.opacity = 0;
     setTimeout(()=>{ qEl.innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`; qEl.style.opacity = 1; }, 120);
 
-    // build options
     optsDiv.innerHTML = '';
     ['A','B','C','D'].forEach(letter => {
       const txt = q_option(q, letter);
@@ -429,9 +429,7 @@
     const q = POOL[currentIndex];
     const correct = q_answer_letter(q);
     const chosen = letter.toUpperCase();
-    // disable buttons
     document.querySelectorAll('.opt').forEach(el => el.disabled = true);
-    // mark classes
     if (correct) {
       const elCorrect = document.getElementById('opt_' + correct);
       if (elCorrect) elCorrect.classList.add('correct');
@@ -485,7 +483,7 @@
     progressBar.style.width = '100%';
   }
 
-  function restartQuiz(){ // carrega novamente mesmo tópico
+  function restartQuiz(){
     if (topicSelect && topicSelect.value) loadTopicQuestions(topicSelect.value);
     else loadTopicQuestions('Todos');
   }
@@ -546,10 +544,11 @@
 
   /***** ----------------- Inicialização -----------------*****/
   (function init(){
-  // se usuário nunca salvou escala, inicializa no 1.10
-  if (localStorage.getItem(SCALE_KEY) === null) {
-    localStorage.setItem(SCALE_KEY, (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1.10).toFixed(2));
-  }
+    // se usuário nunca salvou escala, inicializa no valor do CSS (1.10)
+    if (localStorage.getItem(SCALE_KEY) === null) {
+      const initialScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1.10;
+      localStorage.setItem(SCALE_KEY, initialScale.toFixed(2));
+    }
     setScale(readSavedScale());
     renderStudies();
     showTopicSelection();
