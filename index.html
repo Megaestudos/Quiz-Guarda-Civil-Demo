@@ -7,12 +7,26 @@
   <title>Quiz Guarda Civil — App</title>
   <meta name="theme-color" content="#1e3c72"/>
   <style>
-    :root{
-      --bg1:#0f3b6b; --bg2:#1f6fb0;
-      --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92);
-      --accent: #00ff9d;
-      --card-scale: 1.15;
-    }
+   :root{
+  --bg1:#0f3b6b; --bg2:#1f6fb0;
+  --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92);
+  --accent: #00ff9d;
+  --card-scale: 1.10; /* mudou para iniciar em x1.10 */
+}
+
+/* garante que o cabeçalho não force quebra do título no mobile */
+.header > div:first-child { min-width: 0; } /* permite encolher corretamente */
+.title {
+  white-space: nowrap;         /* não quebra linha dentro do título */
+  overflow: hidden;            /* evita overflow */
+  text-overflow: ellipsis;     /* mostra "..." se faltar espaço */
+}
+
+/* opcional: reduz um pouco o tamanho do título em telas bem pequenas */
+@media (max-width:420px){
+  .title { font-size:16px; } 
+}
+
     html,body{height:100%;margin:0;padding:0}
     body{
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
