@@ -202,13 +202,17 @@
 
   /***** ----------------- Helpers de compatibilidade -----------------*****/
   function q_text(q){
-    return q.pergunta || q.question || q.Pergunta || q.Question || '';
+    // Suporta variantes sing/plural e maiúsculas/minúsculas
+    if (!q) return '';
+    return q.pergunta || q.perguntas || q.question || q.Pergunta || q.Question || q.Perguntas || '';
   }
   function q_topic(q){
-    return q.materia || q.Matéria || q.materia || q.topic || '';
+    return q.materia || q.Matéria || q.materia || q.topic || q.categoria || q.categoria || '';
   }
   function q_expl(q){
-    return q.explicacao || q.explanation || q.Explicacao || q.Explanation || q.explicacao || '';
+    if (!q) return '';
+    // Explicação ou campo resposta (para cartões)
+    return q.explicacao || q.explanation || q.Explicacao || q.Explanation || q.explicacao || q.resposta || q.respostas || q.answer || '';
   }
   function q_answer_letter(q){
     const a = (q.resposta || q.answer || q.Resposta || q.Answer || q.answer || '').toString().trim();
@@ -519,18 +523,64 @@
   function showBestRecord(){ const rec = getRecord(); const el = document.getElementById('bestRecord'); if (!rec) el.innerText = 'Ainda sem recorde. Faça um quiz e apareça aqui!'; else el.innerText = `Seu recorde: ${rec.score}/${rec.total} (${rec.pct}%) — em ${new Date(rec.when).toLocaleString()}`; }
 
   /***** ----------------- CARTÕES (flashcards) -----------------*****/
+  // Agora o renderCards tenta buscar especificamente na aba "cartões".
+  // Ele tenta vários endpoints/fallbacks comuns para compatibilidade.
   async function renderCards(){
     const container = document.getElementById('cardsContainer');
     container.innerHTML = '';
+    const sheetName = 'cartões'; // <-- nome da aba que você mencionou
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getAllQuestions`, {cache:'no-store'});
-      const js = await res.json();
-      const all = (js && js.ok && js.questions) ? js.questions : (TEMPLATE_QUESTIONS || []);
-      makeCards(all);
-      return;
+      const candidates = [
+        `${SCRIPT_URL}?action=getCards&sheet=${encodeURIComponent(sheetName)}`,
+        `${SCRIPT_URL}?action=getQuestionsBySheet&sheet=${encodeURIComponent(sheetName)}`,
+        `${SCRIPT_URL}?action=getSheetByName&sheet=${encodeURIComponent(sheetName)}`,
+        `${SCRIPT_URL}?action=getSheet&sheet=${encodeURIComponent(sheetName)}`,
+        `${SCRIPT_URL}?action=getAllQuestions`
+      ];
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url, {cache:'no-store'});
+          // tenta decodificar JSON (a maioria dos endpoints do GAS retornam JSON)
+          const js = await res.json();
+          let list = null;
+          if (js && js.ok) {
+            if (Array.isArray(js.cards)) list = js.cards;
+            else if (Array.isArray(js.questions)) list = js.questions;
+            else if (Array.isArray(js.rows)) list = js.rows;
+            else if (Array.isArray(js.data)) list = js.data;
+            else if (Array.isArray(js.items)) list = js.items;
+            else if (Array.isArray(js)) list = js;
+          } else if (Array.isArray(js)) {
+            list = js;
+          }
+          // Se for array de arrays (planilha bruta), mapeia pelo cabeçalho
+          if (list && list.length) {
+            if (Array.isArray(list[0])) {
+              // assume primeira linha = cabeçalho
+              if (list.length > 1) {
+                const headers = list[0].map(h=>String(h || '').toLowerCase().trim());
+                const mapped = list.slice(1).map(row=>{
+                  const obj = {};
+                  row.forEach((val,i)=> obj[headers[i] || i] = val );
+                  return obj;
+                });
+                makeCards(mapped);
+                return;
+              }
+            } else {
+              makeCards(list);
+              return;
+            }
+          }
+        } catch(e){
+          console.warn('fetch cards candidate failed', url, e);
+          continue;
+        }
+      }
     } catch(e){
       console.warn('Erro ao buscar cartões', e);
     }
+    // fallback para TEMPLATE_QUESTIONS
     const fallback = TEMPLATE_QUESTIONS || [];
     makeCards(fallback);
   }
@@ -539,14 +589,23 @@
     const container = document.getElementById('cardsContainer');
     container.innerHTML = '';
     if (!list || list.length === 0) { container.innerHTML = '<div class="small">Nenhum cartão disponível.</div>'; return; }
+    // shuffle
     for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
     list.forEach(q=>{
+      // Normaliza campos: algumas planilhas podem usar 'perguntas'/'resposta' ou 'pergunta'/'explicacao'
+      const frontText = q_text(q);
+      const topicText = q_topic(q) || (q.topico || q.topics || '');
+      const backText = q_expl(q) || q.resposta || q.respostas || q.answer || '';
+      const answerLetter = q_answer_letter(q) || '';
       const wrapper = document.createElement('div'); wrapper.className = 'flashcard card-small';
       const inner = document.createElement('div'); inner.className = 'flash-inner';
       const front = document.createElement('div'); front.className = 'flash-front';
       const back = document.createElement('div'); back.className = 'flash-back';
-      front.innerHTML = `<div style="font-size:12px;color:#dfeff5">${q_topic(q) || ''}</div><div style="font-weight:800;margin-top:8px">${q_text(q)}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver explicação</div>`;
-      back.innerHTML = `<div style="font-size:12px;color:#dfeff5">${q_topic(q) || ''}</div><div style="font-weight:800;margin-top:8px">Resposta: ${q_answer_letter(q) || '—'}</div><div style="margin-top:8px;color:#dfeff5">${q_expl(q) || ''}</div>`;
+      front.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topicText}</div><div style="font-weight:800;margin-top:8px">${frontText}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver explicação</div>`;
+      let backHtml = `<div style="font-size:12px;color:#dfeff5">${topicText}</div>`;
+      if (answerLetter) backHtml += `<div style="font-weight:800;margin-top:8px">Resposta: ${answerLetter}</div>`;
+      if (backText) backHtml += `<div style="margin-top:8px;color:#dfeff5">${backText}</div>`;
+      back.innerHTML = backHtml;
       inner.appendChild(front); inner.appendChild(back);
       wrapper.appendChild(inner);
       wrapper.addEventListener('click', ()=> inner.classList.toggle('flipped'));
