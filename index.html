@@ -1,419 +1,275 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Guarda Civil — Plataforma de Estudos (Demo 4h)</title>
-  <meta name="theme-color" content="#1e3c72"/>
-  <style>
-    :root{
-      --bg1:#0f3b6b; --bg2:#1f6fb0;
-      --card-bg: rgba(255,255,255,0.06);
-      --muted: rgba(255,255,255,0.92);
-      --accent: #00ff9d; --accent-2:#2fb6ff;
-      --success:#00c46a; --danger:#ff5c6c;
-      --btn-padding:10px 14px; --action-height:48px; --base-font-size:17px;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guarda Civil — Plataforma de Estudos</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f3f4f6;
+  }
+
+  /* TÍTULO FIXO */
+  #appTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #1f2937;
+    text-align: center;
+    background: white;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+
+  #appTitle img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* CONTAINER PRINCIPAL */
+  .container {
+    padding: 10px 14px;
+  }
+
+  /* BOTÕES DO MENU */
+  .menu-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .menu-buttons button {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 130px;
+    max-width: 160px;
+    padding: 10px 6px;
+    font-size: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+  }
+
+  @media (max-width: 480px) {
+
+    #appTitle {
+      font-size: 17px;
+      padding: 8px 5px;
     }
-    html,body{height:100%;margin:0;padding:0;font-size:var(--base-font-size);}
-    body{
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:#fff; display:flex; align-items:center; justify-content:center;
-      padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom)+12px) 12px;
-      -webkit-font-smoothing:antialiased;
+
+    #appTitle img {
+      width: 26px;
+      height: 26px;
     }
-    .app{ width:100%; max-width:980px; display:flex; flex-direction:column; gap:12px; }
 
-    .card{ background:var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); }
-
-    /* HEADER */
-    .header{ display:flex; justify-content:space-between; align-items:center; gap:10px; z-index:30; padding-right:8px; }
-    .header > .head-left { flex:1 1 auto; min-width:0; display:flex; gap:12px; align-items:center; }
-    .title { font-size:clamp(20px,6vw,30px); margin:0; font-weight:800; line-height:1.02; display:flex; align-items:center; gap:10px; white-space:normal; }
-    .title-icon { font-size:1.12em; display:inline-flex; align-items:center; justify-content:center; }
-    .subtitle{ font-size:14px; color:#e6f7f0; margin-top:6px; }
-    .controls{ display:flex; gap:8px; align-items:center; flex:0 0 auto; }
-
-    /* buttons */
-    .btn{ background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:var(--btn-padding); border-radius:10px; font-weight:700; cursor:pointer; height:var(--action-height); min-width:84px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-    .primary{ background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#012; border:none; box-shadow:0 6px 18px rgba(0,0,0,0.14); }
-    .action-btn{ height:var(--action-height); padding:0 14px; font-size:16px; border-radius:10px; }
-    .small{ font-size:15px; color:#dfeff5; }
-    .small-muted{ font-size:14px; color:#cfeee3; }
-
-    .pages{ min-height:360px; }
-    .page{ display:none; }
-    .page.active{ display:block; }
-
-    .grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-    .card-small{ padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
-
-    /* flashcards */
-    .flashcard{ perspective:1000px; cursor:pointer; }
-    .flash-inner{ transition: transform .5s; transform-style:preserve-3d; position:relative; min-height:140px; }
-    .flash-front,.flash-back{ backface-visibility:hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
-    .flash-front{ background:rgba(255,255,255,0.02); color:#fff; }
-    .flash-back{ transform:rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
-    .flash-inner.flipped{ transform:rotateY(180deg); }
-
-    /* quiz */
-    .opts{ display:grid; gap:10px; grid-template-columns:1fr 1fr; margin-top:8px; }
-    button.opt{ padding:12px; min-height:72px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; font-size:16px; }
-    .opt.correct{ background:#e9fff2; border-color:#2fa764; color:#064; box-shadow:0 8px 20px rgba(47,167,100,0.06); }
-    .opt.wrong{ background:#fff0f0; border-color:#ff6b6b; color:#6b1010; box-shadow:0 8px 20px rgba(255,107,107,0.06); }
-
-    .explain{ margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
-
-    /* bigger question font */
-    #question{ font-size:clamp(18px,2.6vw,22px); }
-
-    /* floating home button */
-    .floating-home{ position:fixed; right:14px; bottom:14px; z-index:60; border-radius:12px; padding:10px 12px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#012; font-weight:900; box-shadow:0 10px 30px rgba(0,0,0,0.28); cursor:pointer; }
-
-    /* responsive tweaks so title not hidden on phones */
-    @media (max-width:520px){
-      .header{ flex-wrap:wrap; align-items:center; }
-      .header > .head-left{ order:1; flex:1 1 100%; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
-      .controls{ order:2; flex:1 1 100%; display:flex; gap:8px; justify-content:flex-end; align-items:center; margin-top:6px; }
-      .title{ font-size:18px; white-space:normal; }
-      .subtitle{ font-size:13px; }
-      .opts{ grid-template-columns:1fr; }
-      .btn{ height:44px; padding:8px 10px; font-size:14px; }
-      button.opt{ font-size:17px; min-height:68px; }
-      .title-icon{ font-size:1.2em; }
+    .menu-buttons button {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 120px;
+      padding: 9px 5px;
+      font-size: 14px;
     }
-  </style>
+  }
+
+  /* PERGUNTAS */
+  .question {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  /* ALTERNATIVAS */
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 18px;
+    margin-bottom: 10px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    border: none;
+  }
+
+  .correct {
+    background: #22c55e !important;
+    color: white;
+  }
+
+  .wrong {
+    background: #ef4444 !important;
+    color: white;
+  }
+
+  /* BOTÃO PRÓXIMO */
+  #nextBtn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* BOTÃO FLUTUANTE PARA VOLTAR AO MENU */
+  #homeBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2563eb;
+    color: white;
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 50px;
+    border: none;
+    z-index: 999;
+  }
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="card header" role="banner">
-      <div class="head-left">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="title-icon" aria-hidden="true">👮‍♂️</span>
-          <div>
-            <h1 class="title" style="margin:0">Guarda Civil — Plataforma de Estudos</h1>
-            <div class="subtitle">Simulados • Flashcards • Quiz • Resultados</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="controls" role="toolbar" aria-label="Controles">
-        <div class="small-muted" id="accessLabel">—</div>
-        <button class="btn" id="soundToggle">🔊 On</button>
-      </div>
-    </div>
+<!-- TÍTULO -->
+<div id="appTitle">
+  <img src="https://cdn-icons-png.flaticon.com/512/2922/2922522.png">
+  Guarda Civil — Plataforma de Estudos
+</div>
 
-    <div class="card pages">
-      <section id="home" class="page active">
-        <div class="small-muted">Bem-vindo! Escolha uma opção.</div>
-        <div class="grid" style="margin-top:12px">
-          <div class="card-small"><h4>Cartões</h4><p class="small-muted">Estudo rápido — clique para virar.</p><div style="margin-top:8px"><button class="btn primary action-btn" onclick="go('cards')">Ir para Cartões</button></div></div>
-          <div class="card-small"><h4>Quiz</h4><p class="small-muted">Questões por tópico.</p><div style="margin-top:8px"><button class="btn primary action-btn" onclick="go('quiz')">Fazer Quiz</button></div></div>
-          <div class="card-small"><h4>Simulados</h4><p class="small-muted">Modo prova.</p><div style="margin-top:8px"><button class="btn primary action-btn" onclick="showSimuladoSetup()">Iniciar Simulado</button></div></div>
-          <div class="card-small"><h4>Histórico</h4><p class="small-muted">Seus salvamentos locais.</p><div style="margin-top:8px"><button class="btn action-btn" onclick="go('history')">Ver Histórico</button></div></div>
-        </div>
-      </section>
+<!-- BOTÃO FLUTUANTE MENU -->
+<button id="homeBtn" onclick="showScreen('menu')">Início</button>
 
-      <section id="cards" class="page"><h3>Cartões</h3><div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-top:12px;"></div></section>
-
-      <section id="quiz" class="page">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <label class="small" style="font-weight:800">Tópico:</label>
-          <select id="topicSelect"></select>
-          <button id="loadTopicBtn" class="btn primary action-btn">Carregar</button>
-          <div style="flex:1"></div>
-          <div class="small" id="quizNote">Questões: <strong id="quizSizeLabel"></strong></div>
-        </div>
-        <div id="question" style="margin-top:12px; white-space:pre-wrap" class="small-muted">Aguardando escolha do tópico...</div>
-        <div id="opts" class="opts" style="margin-top:10px"></div>
-        <div id="explain" class="explain" style="display:none"></div>
-        <div style="margin-top:12px"><button class="btn" id="btnRestart" style="display:none">🔄 Reiniciar</button> <button class="btn primary action-btn" id="nextBtn" disabled>Próxima ➜</button></div>
-      </section>
-
-      <section id="sim" class="page"><h3>Simulados</h3><div id="simArea"></div><div id="simTimerArea" style="margin-top:8px"></div></section>
-
-      <section id="history" class="page"><h3>Histórico</h3><div id="historyList"></div></section>
-    </div>
-
-    <div style="margin-top:12px;text-align:center;color:#dfeff5;font-size:12px">Demo — duração: <strong>4 horas</strong> por dispositivo</div>
+<!-- TELA MENU -->
+<div id="menu" class="container">
+  <div class="menu-buttons">
+    <button onclick="loadQuiz()">Quiz</button>
+    <button onclick="loadFlashcards()">Flashcards</button>
+    <button onclick="loadSimulado()">Simulado</button>
+    <button onclick="loadResultados()">Resultados</button>
   </div>
+</div>
 
-  <!-- floating home -->
-  <div class="floating-home" title="Voltar ao início" onclick="go('home')">Início</div>
+<!-- TELA QUIZ -->
+<div id="quizScreen" class="container" style="display:none;">
+  <div class="question" id="quizQuestion"></div>
+  <div id="options"></div>
+  <button id="nextBtn" onclick="nextQuestion()">Próxima</button>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="flashScreen" class="container" style="display:none;">
+  <h2>Flashcards</h2>
+  <div id="flashContent"></div>
+</div>
+
+<!-- SIMULADO -->
+<div id="simScreen" class="container" style="display:none;">
+  <h2>Simulado</h2>
+  <div id="simContent"></div>
+</div>
+
+<!-- RESULTADOS -->
+<div id="resultScreen" class="container" style="display:none;">
+  <h2>Resultados</h2>
+  <div id="resultsContent"></div>
+</div>
 
 <script>
-/* ========== CONFIG ========== */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS8VtUHvc4_LFRWOEAsTt_xMfUxmAj2ce1gNXTP3O6jEEKxMgKfPPDO-TzYbuP8suFIg/exec';
-const TEMPLATE_QUIZ_SIZE = 20;
-const DEMO_HOURS = 4;
-const DEVICE_KEY = 'gcm_device_id';
-const SERVER_DEMO_EXP_KEY = 'gcm_demo_expires_server';
-const SERVER_DEMO_FLAG = 'gcm_access_server';
-const SOUND_KEY = 'gcm_sound_on';
+const API_URL = "https://script.google.com/macros/s/AKfycbyS8VtUHvc4_LFRWOEAsTt_xMfUxmAj2ce1gNXTP3O6jEEKxMgKfPPDO-TzYbuP8suFIg/exec";
 
-/* ========== UTIL ========== */
-function uuidv4(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){ const r = Math.random()*16|0, v = c==='x' ? r : (r&0x3|0x8); return v.toString(16); }); }
-function getDeviceId(){ let id = localStorage.getItem(DEVICE_KEY); if(!id){ id = uuidv4(); localStorage.setItem(DEVICE_KEY, id); } return id; }
-function nowMs(){ return Date.now(); }
+let quizData = [];
+let currentIndex = 0;
+let canAnswer = true;
 
-/* ========== AUDIO ========== */
-let audioCtx=null;
-function ensureAudio(){ if(audioCtx) return; try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx=null; } }
-function playTone(freq,dur=120,type='sine',gainVal=0.06){ if(!isSoundOn()) return; ensureAudio(); if(!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value = gainVal; o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>{ try{ o.stop(); o.disconnect(); g.disconnect(); }catch(e){} }, dur); }
-function playCorrect(){ playTone(880,120,'sine',0.06); }
-function playWrong(){ playTone(220,220,'sawtooth',0.08); }
-function isSoundOn(){ return localStorage.getItem(SOUND_KEY) !== '0'; }
-function setSoundOn(v){ localStorage.setItem(SOUND_KEY, v ? '1' : '0'); updateSoundBtn(); }
-function updateSoundBtn(){ const el = document.getElementById('soundToggle'); if (el) el.innerText = isSoundOn() ? '🔊 On' : '🔇 Off'; }
-document.addEventListener('DOMContentLoaded', ()=>{ document.getElementById('soundToggle').addEventListener('click', ()=> { setSoundOn(!isSoundOn()); if(isSoundOn()) tryUnlockAudio(); }); });
-window.addEventListener('pointerup', function unlockAudio(){ tryUnlockAudio(); window.removeEventListener('pointerup', unlockAudio); }, { once:true });
-function tryUnlockAudio(){ try{ ensureAudio(); if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){} }
-
-/* ========== ACCESS / DEMO (server automatic) ========== */
-function updateAccessLabel(){
-  const lbl = document.getElementById('accessLabel');
-  const serverExp = localStorage.getItem(SERVER_DEMO_EXP_KEY);
-  if (serverExp){
-    const expMs = Number(serverExp);
-    if (expMs && nowMs() < expMs){
-      const remaining = expMs - nowMs();
-      const hours = Math.floor(remaining/3600000);
-      const mins = Math.floor((remaining%3600000)/60000);
-      lbl.innerText = `Demo (server) — ${hours}h ${mins}m`;
-      localStorage.setItem(SERVER_DEMO_FLAG, '1');
-      return;
-    } else {
-      localStorage.removeItem(SERVER_DEMO_EXP_KEY);
-      localStorage.removeItem(SERVER_DEMO_FLAG);
-    }
-  }
-  const v = localStorage.getItem('gcm_access');
-  if (v && v !== 'DEMO_SERVER'){ const email = localStorage.getItem('gcm_email'); lbl.innerText = `Pago (${v})${email ? ' — '+email : ''}`; return; }
-  const localDemoExp = localStorage.getItem('gcm_demo_expires');
-  if (localDemoExp && Number(localDemoExp) > nowMs()){ const rem = Number(localDemoExp) - nowMs(); const h=Math.floor(rem/3600000); const m=Math.floor((rem%3600000)/60000); lbl.innerText = `Demo (local) — ${h}h ${m}m`; return; }
-  lbl.innerText = 'Sem acesso';
-}
-
-/* check server demo and if none register automatically */
-async function registerDemoServerClient(){
-  try {
-    const deviceId = getDeviceId();
-    const res = await fetch(`${SCRIPT_URL}?action=registerDemoServer&deviceId=${encodeURIComponent(deviceId)}&hours=${encodeURIComponent(DEMO_HOURS)}`, {cache:'no-store'});
-    const js = await res.json();
-    if (js && js.ok && js.expiresAt){
-      const expMs = Date.parse(js.expiresAt);
-      localStorage.setItem(SERVER_DEMO_EXP_KEY, String(expMs));
-      localStorage.setItem(SERVER_DEMO_FLAG, '1');
-    } else if (js && js.ok && js.active && js.expiresAt){
-      const expMs = Date.parse(js.expiresAt);
-      localStorage.setItem(SERVER_DEMO_EXP_KEY, String(expMs));
-      localStorage.setItem(SERVER_DEMO_FLAG, '1');
-    }
-  } catch(e){
-    console.warn('registerDemoServerClient error', e);
-  }
-  updateAccessLabel();
-}
-
-/* ========== CARDS / QUIZ / SIMULADOS ========== */
-async function renderCards(){
-  const container = document.getElementById('cardsContainer');
-  container.innerHTML = '<div class="small-muted">Carregando cartões...</div>';
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getCards`, {cache:'no-store'});
-    const js = await res.json();
-    const list = js && js.ok && Array.isArray(js.cards) ? js.cards : (Array.isArray(js) ? js : (js.cards || []));
-    if (!list || !list.length){ container.innerHTML = '<div class="small-muted">Nenhum cartão encontrado (verifique aba "cartoes").</div>'; return; }
-    container.innerHTML = '';
-    for (const c of list){
-      const front = (c.pergunta || (c.fields && (c.fields.pergunta || c.fields.Pergunta)) || (c.row && c.row[0]) || '').toString();
-      const topic = (c.fields && (c.fields.assunto || c.fields.Assunto)) || '';
-      const backHtmlParts = [];
-      if (c.fields){
-        for (const key of Object.keys(c.fields)){
-          const val = c.fields[key];
-          if (val === null || val === undefined || String(val).trim()==='') continue;
-          if (String(val).trim() === String(front).trim()) continue;
-          backHtmlParts.push(`<div style="margin-top:6px"><strong>${escapeHtml(key)}:</strong><div style="margin-top:4px">${escapeHtml(String(val)).replace(/\n/g,'<br>')}</div></div>`);
-        }
-      }
-      if (!backHtmlParts.length && c.respostaCombined) backHtmlParts.push(`<div>${escapeHtml(String(c.respostaCombined)).replace(/\n/g,'<br>')}</div>`);
-      const backHtml = backHtmlParts.join('');
-      const wrap = document.createElement('div'); wrap.className='flashcard card-small';
-      const inner = document.createElement('div'); inner.className='flash-inner';
-      const f = document.createElement('div'); f.className='flash-front';
-      const b = document.createElement('div'); b.className='flash-back';
-      f.innerHTML = `<div style="font-size:12px;color:#dfeff5">${escapeHtml(topic)}</div><div style="font-weight:800;margin-top:8px">${escapeHtml(front)}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver resposta</div>`;
-      b.innerHTML = `<div style="font-size:12px;color:#dfeff5">${escapeHtml(topic)}</div><div style="font-weight:800;margin-top:8px">Resposta</div><div style="margin-top:8px;color:#dfeff5">${backHtml || '<div class="small-muted">Sem resposta</div>'}</div>`;
-      inner.appendChild(f); inner.appendChild(b); wrap.appendChild(inner);
-      wrap.addEventListener('click', ()=> inner.classList.toggle('flipped'));
-      container.appendChild(wrap);
-    }
-  } catch(e){
-    console.error('renderCards err', e);
-    container.innerHTML = '<div class="small-muted">Erro ao carregar cartões (veja console).</div>';
-  }
-}
-
-/* QUIZ (mantido) */
-let POOL = [], currentIndex = 0, score = 0, quizStarted = false;
-const topicSelect = document.getElementById('topicSelect');
-document.getElementById('loadTopicBtn').addEventListener('click', ()=> loadTopicQuestions(topicSelect.value));
-document.getElementById('nextBtn').addEventListener('click', ()=> { if (!quizStarted) return; currentIndex++; renderQuestion(); });
-
-async function showTopicSelection(){
-  topicSelect.innerHTML = '';
-  const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll);
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
-    const js = await res.json();
-    const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : [];
-    if (Array.isArray(arr)) arr.forEach(t => { const o = document.createElement('option'); o.value=t; o.textContent=t; topicSelect.appendChild(o); });
-  } catch(e){ console.warn('showTopicSelection err', e); }
-}
-showTopicSelection();
-
-async function loadTopicQuestions(topic){
-  document.getElementById('question').innerText = 'Carregando perguntas...';
-  try {
-    let data = [];
-    if (!topic || topic === 'Todos'){
-      const r = await fetch(`${SCRIPT_URL}?action=getQuestions`, {cache:'no-store'});
-      const j = await r.json();
-      data = j && (j.questions || j.questoes) ? (j.questions || j.questoes) : [];
-    } else {
-      const r = await fetch(`${SCRIPT_URL}?action=getQuestionsByTopic&topico=${encodeURIComponent(topic)}`, {cache:'no-store'});
-      const j = await r.json();
-      data = j && (j.questions || j.questoes) ? (j.questions || j.questoes) : [];
-    }
-    POOL = Array.isArray(data) ? data.slice(0, TEMPLATE_QUIZ_SIZE || 20) : [];
-    currentIndex = 0; score = 0; quizStarted = true;
-    document.getElementById('btnRestart').style.display = 'none';
-    renderQuestion();
-  } catch (err){
-    console.error('Erro ao carregar questões:', err);
-    document.getElementById('question').innerText = 'Erro ao carregar questões.';
-  }
-}
-
-function renderQuestion(){
-  document.getElementById('explain').style.display='none';
-  document.getElementById('nextBtn').disabled = true;
-  if (!POOL || POOL.length === 0) { document.getElementById('question').innerText = 'Nenhuma questão disponível.'; document.getElementById('opts').innerHTML=''; quizStarted=false; return; }
-  if (currentIndex >= POOL.length) { finishQuiz(); return; }
-  const q = POOL[currentIndex];
-  document.getElementById('question').innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
-  const optsDiv = document.getElementById('opts'); optsDiv.innerHTML = '';
-  ['A','B','C','D'].forEach(letter=>{
-    const txt = q_option(q, letter);
-    if (!txt) return;
-    const btn = document.createElement('button'); btn.className='opt'; btn.innerText = `${letter}) ${txt}`;
-    btn.onclick = ()=> selectOption(letter);
-    optsDiv.appendChild(btn);
+/* --------- TROCA DE TELAS ----------- */
+function showScreen(screen) {
+  document.querySelectorAll("div[id]").forEach(div => {
+    if (!div.id.includes("Btn")) div.style.display = "none";
   });
-  document.getElementById('quizSizeLabel').innerText = POOL.length || TEMPLATE_QUIZ_SIZE;
+  document.getElementById(screen).style.display = "block";
 }
 
-function selectOption(letter){
-  if (!quizStarted) return;
-  const q = POOL[currentIndex];
-  const correct = q_answer_letter(q);
-  const chosen = letter.toUpperCase();
-  document.querySelectorAll('.opt').forEach(el => el.disabled = true);
-  const elCorrect = Array.from(document.querySelectorAll('.opt')).find(b => b.innerText.startsWith((correct||'') + ')'));
-  const elChosen = Array.from(document.querySelectorAll('.opt')).find(b => b.innerText.startsWith(chosen + ')'));
-  if (elCorrect) elCorrect.classList.add('correct');
-  if (elChosen){
-    if (chosen === correct) { elChosen.classList.add('correct'); playCorrect(); score++; }
-    else { elChosen.classList.add('wrong'); playWrong(); if (elCorrect && elCorrect !== elChosen) elCorrect.classList.add('correct'); }
-  } else { if (chosen !== correct) playWrong(); else playCorrect(); }
-  const title = (chosen === correct) ? '✅ Correto!' : ('❌ Errado! Resposta: ' + (correct || '—'));
-  document.getElementById('explain').style.display='block';
-  document.getElementById('explain').innerHTML = `<strong>${title}</strong><div style="margin-top:8px;color:#dfeff5">${q_expl(q) || ''}</div>`;
-  document.getElementById('nextBtn').disabled = false;
+/* --------- CARREGAR QUIZ ---------- */
+async function loadQuiz() {
+  showScreen("quizScreen");
+  const res = await fetch(API_URL + "?action=getQuestions");
+  const data = await res.json();
+  quizData = data.questions;
+  currentIndex = 0;
+  loadQuestion();
 }
 
-function finishQuiz(){
-  quizStarted = false;
-  const total = POOL.length || 1;
-  const pct = Math.round((score / total) * 100);
-  document.getElementById('question').innerText = `✔ Você acertou ${score} de ${total} (${pct}%)`;
-  document.getElementById('opts').innerHTML = '';
-  document.getElementById('explain').style.display='block';
-  document.getElementById('explain').innerHTML = `<div style="color:#dfeff5">Salve seu resultado no histórico se quiser.</div><div style="margin-top:8px"><button class="btn primary" onclick="saveLocalResult({score:${score},total:${total},pct:${pct},mode:'quiz',date:new Date().toISOString()})">Salvar no histórico</button></div>`;
-  document.getElementById('btnRestart').style.display = 'inline-block';
-}
-function restartQuiz(){ if (topicSelect && topicSelect.value) loadTopicQuestions(topicSelect.value); else loadTopicQuestions('Todos'); }
+function loadQuestion() {
+  const q = quizData[currentIndex];
+  document.getElementById("quizQuestion").innerText = q.question;
 
-/* SIMULADOS and HISTORY (kept) */
-let SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:null };
-async function showSimuladoSetup(){
-  go('sim');
-  const html = `
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <label class="small-muted">Tópico:</label>
-      <select id="simTopic"></select>
-      <label class="small-muted"># Questões:</label>
-      <select id="simSize"><option>20</option><option>30</option><option>50</option></select>
-      <label class="small-muted"><input type="checkbox" id="simTimed"> Cronometrado</label>
-      <button class="btn primary" id="startSimBtn">Iniciar Simulado</button>
-    </div>
-  `;
-  document.getElementById('simArea').innerHTML = html;
-  const sel = document.getElementById('simTopic'); sel.innerHTML = '<option>Todos</option>';
-  try { const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'}); const js = await res.json(); const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : []; if (Array.isArray(arr)) arr.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); }); } catch(e){ console.warn('sim topics', e); }
-  document.getElementById('startSimBtn').addEventListener('click', ()=> {
-    const topic = document.getElementById('simTopic').value;
-    const size = parseInt(document.getElementById('simSize').value,10);
-    const timed = document.getElementById('simTimed').checked;
-    startSimulado({topic,size,timed});
+  const optionsBox = document.getElementById("options");
+  optionsBox.innerHTML = "";
+
+  ["A","B","C","D"].forEach(letter => {
+    let btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.innerText = letter + ") " + q[letter];
+    btn.onclick = () => selectOption(letter, btn);
+    optionsBox.appendChild(btn);
   });
+
+  canAnswer = true;
 }
-async function startSimulado(cfg){
-  SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:cfg };
-  try {
-    const url = `${SCRIPT_URL}?action=getSimulado&qtd=${encodeURIComponent(cfg.size||20)}`;
-    const res = await fetch(url, {cache:'no-store'});
-    const js = await res.json();
-    let list = (js && js.ok && js.questoes) ? js.questoes : (Array.isArray(js) ? js : []);
-    for (let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-    SIM.pool = list.slice(0, Math.min(cfg.size||20, list.length));
-    SIM.answers = Array(SIM.pool.length).fill(null);
-    SIM.idx = 0;
-    if (cfg.timed) { SIM.timeLeft = SIM.pool.length * 60; startSimTimer(); }
-    renderSimuladoQuestion();
-  } catch(e){ console.error('startSimulado err', e); document.getElementById('simArea').innerText = 'Erro ao iniciar simulado.'; }
+
+/* ---------- SELEÇÃO ---------- */
+function selectOption(letter, btn) {
+  if (!canAnswer) return;
+  canAnswer = false;
+
+  const q = quizData[currentIndex];
+  const correct = q.answer;
+
+  if (letter === correct) {
+    btn.classList.add("correct");
+    playCorrectSound();
+  } else {
+    btn.classList.add("wrong");
+    playWrongSound();
+    [...document.querySelectorAll(".option-btn")].forEach(b => {
+      if (b.innerText.startsWith(correct)) b.classList.add("correct");
+    });
+  }
 }
-function startSimTimer(){ if (SIM.timer) clearInterval(SIM.timer); SIM.timer = setInterval(()=> { SIM.timeLeft--; const m=Math.floor(SIM.timeLeft/60); const s=SIM.timeLeft%60; document.getElementById('simTimerArea').innerText = `Tempo restante: ${m}:${String(s).padStart(2,'0')}`; if (SIM.timeLeft<=0){ clearInterval(SIM.timer); finishSimulado(); } },1000); }
-function renderSimuladoQuestion(){ const q=SIM.pool[SIM.idx]; if(!q){ finishSimulado(); return; } document.getElementById('simArea').innerHTML = `<div style="white-space:pre-wrap">${q_text(q)}</div><div id="simOpts" style="margin-top:8px" class="opts"></div>`; const opts = document.getElementById('simOpts'); ['A','B','C','D'].forEach(letter=>{ const txt=q_option(q,letter); if(!txt) return; const b=document.createElement('button'); b.className='opt'; b.innerText = `${letter}) ${txt}`; b.onclick = ()=> { SIM.answers[SIM.idx]=letter; Array.from(opts.querySelectorAll('button.opt')).forEach(bt=> bt.style.opacity=0.6); b.style.opacity=1; setTimeout(()=>{ if (SIM.idx < SIM.pool.length-1){ SIM.idx++; renderSimuladoQuestion(); } else finishSimulado(); },250); }; opts.appendChild(b); }); }
-function finishSimulado(){ if (SIM.timer){ clearInterval(SIM.timer); SIM.timer=null; } const total=SIM.pool.length; let sc=0; const details=[]; for (let i=0;i<total;i++){ const q=SIM.pool[i]; const chosen=SIM.answers[i]; const correct=(q.correta||q.resposta||'').toString().substr(0,1).toUpperCase(); const ok = chosen && chosen.toUpperCase()===correct; if(ok) sc++; details.push({id:q.id||i+1,question:q_text(q),chosen:chosen||null,correct:correct||null,ok}); } const pct=Math.round((sc/total)*100); document.getElementById('simArea').innerHTML = `<div>Resultado: ${sc}/${total} (${pct}%)</div><div style="margin-top:8px"><button class="btn primary" onclick="saveLocalResult({score:${sc},total:${total},pct:${pct},details:${JSON.stringify(details)},topic:'${SIM.config.topic}',timed:${SIM.config.timed},date:new Date().toISOString()})">Salvar local</button> <button class="btn" onclick="reviewSimulado(${JSON.stringify(JSON.stringify(details))})">Rever erros</button></div>`; saveLocalResult({score:sc,total:total,pct:pct,mode:'simulado',date:new Date().toISOString(),topic:SIM.config.topic}); }
-function reviewSimulado(jsonStr){ try { const details = JSON.parse(JSON.parse(jsonStr)); const wrong = details.filter(d=>!d.ok); if (!wrong.length){ alert('Nenhum erro :-)'); return; } SIM.pool = wrong.map(w=> ({question:w.question, id:w.id}) ); SIM.idx = 0; renderSimuladoQuestion(); go('sim'); } catch(e){ console.error(e); alert('Erro ao revisar.'); } }
 
-/* HISTORY */
-function saveLocalResult(obj){ const key='gcm_history_v1'; const arr=JSON.parse(localStorage.getItem(key)||'[]'); arr.unshift(obj); localStorage.setItem(key, JSON.stringify(arr.slice(0,200))); alert('Resultado salvo localmente.'); renderHistory(); }
-function renderHistory(){ const key='gcm_history_v1'; const arr=JSON.parse(localStorage.getItem(key)||'[]'); const container=document.getElementById('historyList'); if(!arr||!arr.length){ container.innerHTML='<div class="small-muted">Nenhum histórico salvo.</div>'; return; } container.innerHTML=''; arr.forEach(r=>{ const div=document.createElement('div'); div.className='card-small'; div.style.marginBottom='8px'; div.innerHTML=`<div><strong>${r.mode||'simulado'}</strong> — ${r.score}/${r.total} (${r.pct}%) <span style="float:right;font-size:12px;color:#dfeff5">${r.date? new Date(r.date).toLocaleString():''}</span></div><div class="small-muted" style="margin-top:6px">${r.topic? 'Tópico: '+r.topic : ''}</div>`; container.appendChild(div); }); }
+/* ---------- SONS ---------- */
+function playCorrectSound() {
+  new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play();
+}
+function playWrongSound() {
+  new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg").play();
+}
 
-/* UTIL compat functions */
-function q_text(q){ if(!q) return ''; return q.enunciado || q.pergunta || q.question || q.text || q.Question || ''; }
-function q_topic(q){ if(!q) return ''; return q.assunto || q.materia || q.topico || q.topic || ''; }
-function q_expl(q){ if(!q) return ''; return q.explicacao || q.explanation || q.resposta || q.explanation || ''; }
-function q_answer_letter(q){ const a=(q.correta||q.resposta||q.answer||'').toString().trim(); if(!a) return ''; return a.substr(0,1).toUpperCase(); }
-function q_option(q,letter){ if(!q) return ''; const up=q[letter]||q[letter.toUpperCase()]||q[letter.toLowerCase()]; if(up) return up; if(q.A && letter==='A') return q.A; if(q.B && letter==='B') return q.B; if(q.C && letter==='C') return q.C; if(q.D && letter==='D') return q.D; return ''; }
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* NAV */
-function go(target){ document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(target).classList.add('active'); if(target==='cards') renderCards(); if(target==='quiz') showTopicSelection(); if(target==='history') renderHistory(); }
-
-/* INIT */
-(function init(){
-  if (localStorage.getItem(SOUND_KEY) === null) localStorage.setItem(SOUND_KEY,'1');
-  updateSoundBtn();
-  getDeviceId();
-  // registra demo automático no servidor (4 horas)
-  registerDemoServerClient();
-  document.getElementById('quizSizeLabel').innerText = TEMPLATE_QUIZ_SIZE || 20;
-  go('home');
-})();
+/* ---------- PRÓXIMA ---------- */
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= quizData.length) {
+    alert("Fim do Quiz!");
+    showScreen("menu");
+  } else {
+    loadQuestion();
+  }
+}
 </script>
+
 </body>
 </html>
