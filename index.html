@@ -10,54 +10,46 @@
       --bg1:#0f3b6b; --bg2:#1f6fb0;
       --card-bg: rgba(255,255,255,0.06);
       --muted: rgba(255,255,255,0.92);
-      --accent: #00ff9d;
-      --accent-2: #2fb6ff;
+      --accent: #00ff9d; --accent-2:#2fb6ff;
       --success:#00c46a; --danger:#ff5c6c;
-      --btn-padding: 10px 14px;
-      --action-height: 48px;
-      --shadow: 0 10px 30px rgba(0,0,0,0.28);
-      --base-font-size: 16px;
+      --btn-padding:10px 14px; --action-height:48px; --base-font-size:17px;
     }
     html,body{height:100%;margin:0;padding:0;font-size:var(--base-font-size);}
-    body{ font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; display:flex; align-items:center; justify-content:center; padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px) 12px; -webkit-font-smoothing:antialiased; }
-    .app { width:100%; max-width:980px; display:flex; flex-direction:column; gap:12px; }
-    .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:var(--shadow); backdrop-filter: blur(6px); }
-    .header { display:flex; justify-content:space-between; align-items:center; gap:10px; z-index:30; }
-    .header > div:first-child { flex:1 1 auto; min-width:0; }
-    .title { font-size: clamp(20px,6vw,28px); margin:0; font-weight:800; line-height:1.05; }
-    .subtitle { font-size:14px; color:#e6f7f0; margin-top:6px; }
-    .controls { display:flex; gap:8px; align-items:center; }
-    .btn { background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:var(--btn-padding);border-radius:10px;font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:var(--action-height); min-width:84px; }
-    .primary { background: linear-gradient(90deg,var(--accent), var(--accent-2)); color:#012; border:none; box-shadow: 0 6px 18px rgba(0,0,0,0.14); }
-    .action-btn { height: var(--action-height); padding: 0 14px; font-size:16px; border-radius:10px; }
-    .small { font-size:15px; color:#dfeff5; }
-    .small-muted { font-size:14px; color:#cfeee3; }
-    .pages { min-height:360px; } .page{display:none;} .page.active{display:block;}
-    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    body{ font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; display:flex; align-items:center; justify-content:center; padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom)+12px) 12px; -webkit-font-smoothing:antialiased;}
+    .app{ width:100%; max-width:980px; display:flex; flex-direction:column; gap:12px; }
+    .card{ background:var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); }
+    .header{ display:flex; justify-content:space-between; align-items:center; gap:10px; z-index:30; }
+    .header > div:first-child{ flex:1 1 auto; min-width:0; }
+    .title{ font-size:clamp(20px,6vw,28px); margin:0; font-weight:800; line-height:1.05; }
+    .subtitle{ font-size:14px; color:#e6f7f0; margin-top:6px; }
+    .controls{ display:flex; gap:8px; align-items:center; }
+    .btn{ background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:var(--btn-padding); border-radius:10px; font-weight:700; cursor:pointer; height:var(--action-height); min-width:84px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+    .primary{ background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#012; border:none; box-shadow:0 6px 18px rgba(0,0,0,0.14); }
+    .action-btn{ height:var(--action-height); padding:0 14px; font-size:16px; border-radius:10px; }
+    .small{ font-size:15px; color:#dfeff5; }
+    .small-muted{ font-size:14px; color:#cfeee3; }
+    .pages{ min-height:360px; } .page{ display:none; } .page.active{ display:block; }
+    .grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
     .card-small{ padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
     .flashcard{ perspective:1000px; cursor:pointer; }
-    .flash-inner{ transition: transform .5s; transform-style: preserve-3d; position:relative; min-height:140px; }
+    .flash-inner{ transition: transform .5s; transform-style:preserve-3d; position:relative; min-height:140px; }
     .flash-front,.flash-back{ backface-visibility:hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
     .flash-front{ background:rgba(255,255,255,0.02); color:#fff; }
-    .flash-back{ transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
-    .flash-inner.flipped{ transform: rotateY(180deg); }
+    .flash-back{ transform:rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
+    .flash-inner.flipped{ transform:rotateY(180deg); }
     .opts{ display:grid; gap:10px; grid-template-columns:1fr 1fr; margin-top:8px; }
     button.opt{ padding:12px; min-height:66px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; font-size:15px; }
-    .opt.correct { background: #e9fff2; border-color: #2fa764; color:#064; box-shadow: 0 8px 20px rgba(47,167,100,0.06); }
-    .opt.wrong { background: #fff0f0; border-color: #ff6b6b; color:#6b1010; box-shadow: 0 8px 20px rgba(255,107,107,0.06); }
+    .opt.correct{ background:#e9fff2; border-color:#2fa764; color:#064; box-shadow:0 8px 20px rgba(47,167,100,0.06); }
+    .opt.wrong{ background:#fff0f0; border-color:#ff6b6b; color:#6b1010; box-shadow:0 8px 20px rgba(255,107,107,0.06); }
     .explain{ margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
-    .notice{ padding:8px 10px; border-radius:8px; }
-    .notice.ok{ background: rgba(0,196,106,0.12); color:var(--success); }
-    .notice.err{ background: rgba(255,92,108,0.08); color:var(--danger); }
+    .floating-home{ position:fixed; right:14px; bottom:14px; z-index:60; border-radius:12px; padding:10px 12px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#012; font-weight:900; box-shadow:0 10px 30px rgba(0,0,0,0.28); cursor:pointer; }
     @media (max-width:520px){
-      .header { flex-wrap:wrap; align-items:center; }
-      .header > div:first-child { order:1; flex:1 1 100%; min-width:0; }
-      .controls { order:2; flex:1 1 100%; display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:8px; }
-      .title { font-size:20px; white-space:normal; }
-      .subtitle { font-size:13px; }
-      .opts { grid-template-columns:1fr; }
-      .btn { min-width:70px; height:44px; padding:8px 10px; font-size:14px; }
-      .action-btn{ height:44px; font-size:15px; }
+      .header{ flex-wrap:wrap; align-items:center; }
+      .header > div:first-child{ order:1; flex:1 1 100%; min-width:0; }
+      .controls{ order:2; flex:1 1 100%; display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:8px; }
+      .title{ font-size:20px; white-space:normal; }
+      .opts{ grid-template-columns:1fr; }
+      .btn{ height:44px; padding:8px 10px; font-size:14px; }
       button.opt{ font-size:16px; min-height:64px; }
     }
   </style>
@@ -111,111 +103,99 @@
     <div style="margin-top:12px;text-align:center;color:#dfeff5;font-size:12px">Demo via servidor — duração: <strong>4 horas</strong></div>
   </div>
 
+  <!-- floating home -->
+  <div class="floating-home" title="Voltar ao início" onclick="go('home')">Inicio</div>
+
   <!-- login modal -->
   <div id="loginModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:40">
     <div class="card" style="width:92%;max-width:480px">
-      <h3>Entrar / Resgatar</h3>
+      <h3>Entrar / Resgatar / Demo</h3>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
         <input id="inputName" placeholder="Seu nome" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
-        <input id="inputEmail" placeholder="Seu e-mail (opcional)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
-        <input id="inputCode" placeholder="Código de compra / Demo" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
+        <input id="inputEmail" placeholder="Seu e-mail (obrigatório para demo)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
+        <input id="inputCode" placeholder="Código de compra (opcional)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
         <div style="display:flex;gap:8px">
           <button class="btn primary" id="btnRedeem">Resgatar</button>
-          <button class="btn" id="btnDemo">Demo (4h)</button>
+          <button class="btn" id="btnRequestToken">Pedir token (Demo)</button>
+          <button class="btn" id="btnResendToken" style="display:none">Reenviar token</button>
           <button class="btn" id="btnCloseLogin">Fechar</button>
         </div>
         <div id="redeemNotice"></div>
+
+        <!-- token area -->
+        <div id="tokenArea" style="display:none;margin-top:6px">
+          <input id="inputToken" placeholder="Cole o token recebido por e-mail" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn primary" id="btnVerifyToken">Verificar token</button>
+            <button class="btn" id="btnCancelToken">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="small-muted" style="margin-top:6px">Ao pedir demo, você receberá um token por e-mail (30 min). Clique Reenviar se não recebeu.</div>
       </div>
     </div>
   </div>
 
 <script>
 /* ================= CONFIG ================= */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvhmdfrLbWeHA3lzSxW0aKveRouWC3uAGbVbOcV1PD4lVOjql7SzZAy1sqmB6cWjQdlg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7fZ3sdaqtQDGnNPoBJQEcMM2irIb5361CreasJwPuLjnA9-g12VNhWs7azDIQi-R0Rw/exec';
 const TEMPLATE_QUIZ_SIZE = 20;
 const DEMO_HOURS = 4;
-const SOUND_KEY = 'gcm_sound_on';
 const DEVICE_KEY = 'gcm_device_id';
 const SERVER_DEMO_EXP_KEY = 'gcm_demo_expires_server';
 const SERVER_DEMO_FLAG = 'gcm_access_server';
+const SOUND_KEY = 'gcm_sound_on';
 
-/* ================ STATE ================ */
-let POOL = [], currentIndex = 0, score = 0, quizStarted = false;
-let audioCtx = null;
-
-/* ================ UTIL ================== */
-function uuidv4(){ // simple uuid
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-function getDeviceId(){
-  let id = localStorage.getItem(DEVICE_KEY);
-  if (!id){ id = uuidv4(); localStorage.setItem(DEVICE_KEY, id); }
-  return id;
-}
-function isoNowPlusHours(h){ return new Date(Date.now() + h*3600*1000).toISOString(); }
+/* ================ UTIL ================= */
+function uuidv4(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){ const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }
+function getDeviceId(){ let id = localStorage.getItem(DEVICE_KEY); if(!id){ id = uuidv4(); localStorage.setItem(DEVICE_KEY, id); } return id; }
 function nowMs(){ return Date.now(); }
 
 /* ================ AUDIO ================= */
-function ensureAudio(){ if (audioCtx) return; try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ audioCtx = null; } }
-function playTone(freq,dur=120,type='sine',gainVal=0.06){ if (!isSoundOn()) return; ensureAudio(); if (!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gainVal; o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>{ try{o.stop(); o.disconnect(); g.disconnect();}catch(e){} }, dur); }
+let audioCtx=null;
+function ensureAudio(){ if(audioCtx) return; try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx=null; } }
+function playTone(freq,dur=120,type='sine',gainVal=0.06){ if(!isSoundOn()) return; ensureAudio(); if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gainVal; o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>{ try{o.stop(); o.disconnect(); g.disconnect(); }catch(e){} }, dur); }
 function playCorrect(){ playTone(880,120,'sine',0.06); }
 function playWrong(){ playTone(220,220,'sawtooth',0.08); }
 function isSoundOn(){ return localStorage.getItem(SOUND_KEY) !== '0'; }
 function setSoundOn(v){ localStorage.setItem(SOUND_KEY, v ? '1' : '0'); updateSoundBtn(); }
 function updateSoundBtn(){ document.getElementById('soundToggle').innerText = isSoundOn() ? '🔊 On' : '🔇 Off'; }
-document.getElementById('soundToggle').addEventListener('click', ()=> { setSoundOn(!isSoundOn()); if (isSoundOn()) tryUnlockAudio(); });
+document.getElementById('soundToggle').addEventListener('click', ()=> { setSoundOn(!isSoundOn()); if(isSoundOn()) tryUnlockAudio(); });
 window.addEventListener('pointerup', function unlockAudio(){ tryUnlockAudio(); window.removeEventListener('pointerup', unlockAudio); }, { once:true });
-function tryUnlockAudio(){ try{ ensureAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){} }
+function tryUnlockAudio(){ try{ ensureAudio(); if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){} }
 
 /* ================ ACCESS / DEMO (server) ================= */
 function updateAccessLabel(){
   const lbl = document.getElementById('accessLabel');
-  // check server demo first (local stored)
   const serverExp = localStorage.getItem(SERVER_DEMO_EXP_KEY);
   if (serverExp){
     const expMs = Number(serverExp);
     if (expMs && nowMs() < expMs){
       const remaining = expMs - nowMs();
       const hours = Math.floor(remaining/3600000);
-      const mins = Math.floor((remaining % 3600000)/60000);
+      const mins = Math.floor((remaining%3600000)/60000);
       lbl.innerText = `Demo (server) — ${hours}h ${mins}m`;
       localStorage.setItem(SERVER_DEMO_FLAG, '1');
       return;
     } else {
-      // expired: clear server demo info
       localStorage.removeItem(SERVER_DEMO_EXP_KEY);
       localStorage.removeItem(SERVER_DEMO_FLAG);
     }
   }
-  // fallback: local demo key (older client-side demo)
   const v = localStorage.getItem('gcm_access');
-  if (v && v !== 'DEMO_SERVER') {
-    const email = localStorage.getItem('gcm_email');
-    lbl.innerText = `Pago (${v})${email ? ' — ' + email : ''}`;
-    return;
-  }
-  // finally: demo localStorage flag (old flow) or nothing
+  if (v && v !== 'DEMO_SERVER'){ const email = localStorage.getItem('gcm_email'); lbl.innerText = `Pago (${v})${email ? ' — '+email : ''}`; return; }
   const localDemoExp = localStorage.getItem('gcm_demo_expires');
-  if (localDemoExp && Number(localDemoExp) > nowMs()){
-    const rem = Number(localDemoExp) - nowMs();
-    const h = Math.floor(rem/3600000); const m = Math.floor((rem%3600000)/60000);
-    lbl.innerText = `Demo (local) — ${h}h ${m}m`;
-    return;
-  }
+  if (localDemoExp && Number(localDemoExp) > nowMs()){ const rem = Number(localDemoExp) - nowMs(); const h=Math.floor(rem/3600000); const m=Math.floor((rem%3600000)/60000); lbl.innerText = `Demo (local) — ${h}h ${m}m`; return; }
   lbl.innerText = 'Sem acesso';
 }
 
-/* server check on load */
+/* check server demo on load */
 async function checkServerDemoOnLoad(){
   try {
     const deviceId = getDeviceId();
     const res = await fetch(`${SCRIPT_URL}?action=checkDemo&deviceId=${encodeURIComponent(deviceId)}`, {cache:'no-store'});
     const js = await res.json();
-    if (js && js.ok && js.active){
-      // set local server-expiry (ms)
+    if (js && js.ok && js.active && js.expiresAt){
       const expMs = Date.parse(js.expiresAt);
       localStorage.setItem(SERVER_DEMO_EXP_KEY, String(expMs));
       localStorage.setItem(SERVER_DEMO_FLAG, '1');
@@ -223,71 +203,67 @@ async function checkServerDemoOnLoad(){
       localStorage.removeItem(SERVER_DEMO_EXP_KEY);
       localStorage.removeItem(SERVER_DEMO_FLAG);
     }
+  } catch(e){ console.warn('checkServerDemo error', e); }
+  updateAccessLabel();
+}
+
+/* request token (server) - also used for resend */
+async function requestVerifyEmail(){
+  const name = document.getElementById('inputName').value.trim();
+  const email = document.getElementById('inputEmail').value.trim();
+  if (!email) { document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Informe o e-mail para receber o token.</div>'; return; }
+  document.getElementById('redeemNotice').innerHTML = '<div class="notice">Solicitando token...</div>';
+  try {
+    const deviceId = getDeviceId();
+    const url = `${SCRIPT_URL}?action=requestVerifyEmail&deviceId=${encodeURIComponent(deviceId)}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
+    const res = await fetch(url, {cache:'no-store'});
+    const js = await res.json();
+    if (js && js.ok){
+      document.getElementById('redeemNotice').innerHTML = '<div class="notice ok">Token enviado por e-mail — cole abaixo.</div>';
+      document.getElementById('tokenArea').style.display = 'block';
+      document.getElementById('btnResendToken').style.display = 'inline-flex';
+    } else {
+      document.getElementById('redeemNotice').innerHTML = `<div class="notice err">${js && js.error ? js.error : 'Erro ao solicitar token.'}</div>`;
+    }
   } catch(e){
-    console.warn('checkServerDemo error', e);
-    // keep local state if any
-  } finally {
-    updateAccessLabel();
+    console.error('requestVerifyEmail err', e);
+    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro ao solicitar token (veja console).</div>';
   }
 }
 
-/* register demo on server (called from Demo button) */
-async function registerServerDemo(name,email){
+/* verify token (server) */
+async function verifyToken(){
+  const token = document.getElementById('inputToken').value.trim();
+  if (!token) { document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Cole o token recebido.</div>'; return; }
+  document.getElementById('redeemNotice').innerHTML = '<div class="notice">Verificando token...</div>';
   try {
     const deviceId = getDeviceId();
-    const url = `${SCRIPT_URL}?action=registerDemoServer&deviceId=${encodeURIComponent(deviceId)}&hours=${encodeURIComponent(DEMO_HOURS)}&name=${encodeURIComponent(name||'')}&email=${encodeURIComponent(email||'')}`;
+    const url = `${SCRIPT_URL}?action=verifyToken&deviceId=${encodeURIComponent(deviceId)}&token=${encodeURIComponent(token)}&hours=${encodeURIComponent(DEMO_HOURS)}`;
     const res = await fetch(url, {cache:'no-store'});
     const js = await res.json();
-    if (js && js.ok && js.active && js.expiresAt){
+    if (js && js.ok && js.expiresAt){
       const expMs = Date.parse(js.expiresAt);
       localStorage.setItem(SERVER_DEMO_EXP_KEY, String(expMs));
       localStorage.setItem(SERVER_DEMO_FLAG, '1');
       updateAccessLabel();
-      alert('Demo ativada por ' + DEMO_HOURS + ' horas (servidor).');
-      document.getElementById('loginModal').style.display='none';
+      document.getElementById('redeemNotice').innerHTML = '<div class="notice ok">Token verificado — demo ativada (4h).</div>';
+      setTimeout(()=>{ document.getElementById('loginModal').style.display='none'; document.getElementById('tokenArea').style.display='none'; },900);
       return;
     } else {
-      alert('Não foi possível ativar demo no servidor. Tente novamente mais tarde.');
-      console.warn('registerServerDemo result', js);
+      document.getElementById('redeemNotice').innerHTML = `<div class="notice err">${js && js.error ? js.error : 'Token inválido.'}</div>`;
     }
   } catch(e){
-    console.error('registerServerDemo err', e);
-    alert('Erro ao ativar demo (veja console).');
-  } finally {
-    updateAccessLabel();
+    console.error('verifyToken err', e);
+    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro ao verificar token (veja console).</div>';
   }
 }
 
-/* ================ NAV & UI ================= */
-function go(target){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(target).classList.add('active');
-  if (target === 'cards') renderCards();
-  if (target === 'quiz') showTopicSelection();
-  if (target === 'history') renderHistory();
-}
-
-/* login modal wiring */
-document.getElementById('btnOpenLogin').addEventListener('click', ()=> openLogin());
-document.getElementById('btnCloseLogin').addEventListener('click', ()=> closeLogin());
-document.getElementById('btnDemo').addEventListener('click', ()=> {
-  const name = document.getElementById('inputName').value.trim();
-  const email = document.getElementById('inputEmail').value.trim();
-  // register on server (4 hours)
-  registerServerDemo(name,email);
-});
-document.getElementById('btnRedeem').addEventListener('click', ()=> {
+/* legacy redeem (codes) */
+async function redeemCode(){
   const code = document.getElementById('inputCode').value.trim();
-  const email = document.getElementById('inputEmail').value.trim();
   const name = document.getElementById('inputName').value.trim();
-  redeemCode(name,email,code);
-});
-function openLogin(){ document.getElementById('inputCode').value=''; document.getElementById('inputEmail').value=''; document.getElementById('inputName').value=''; document.getElementById('redeemNotice').innerHTML=''; document.getElementById('loginModal').style.display='flex'; }
-function closeLogin(){ document.getElementById('loginModal').style.display='none'; }
-
-/* redeem via existing endpoint */
-async function redeemCode(name,email,code){
-  if (!code) { document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Informe o código.</div>'; return; }
+  const email = document.getElementById('inputEmail').value.trim();
+  if (!code){ document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Informe o código.</div>'; return; }
   document.getElementById('redeemNotice').innerHTML = '<div class="notice">Validando...</div>';
   try {
     const url = `${SCRIPT_URL}?action=ativarCodigo&nome=${encodeURIComponent(name||'')}&email=${encodeURIComponent(email||'')}&codigo=${encodeURIComponent(code)}`;
@@ -298,15 +274,24 @@ async function redeemCode(name,email,code){
       if (email) localStorage.setItem('gcm_email', email);
       document.getElementById('redeemNotice').innerHTML = '<div class="notice ok">Código válido — acesso liberado.</div>';
       updateAccessLabel();
-      setTimeout(()=> closeLogin(),900);
+      setTimeout(()=> document.getElementById('loginModal').style.display='none',900);
     } else {
       document.getElementById('redeemNotice').innerHTML = `<div class="notice err">${js && js.error ? js.error : 'Código inválido.'}</div>`;
     }
   } catch(e){
-    console.error(e);
+    console.error('redeemCode err', e);
     document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro na validação (veja console).</div>';
   }
 }
+
+/* modal wiring */
+document.getElementById('btnOpenLogin').addEventListener('click', ()=> { document.getElementById('loginModal').style.display='flex'; });
+document.getElementById('btnCloseLogin').addEventListener('click', ()=> { document.getElementById('loginModal').style.display='none'; document.getElementById('tokenArea').style.display='none'; });
+document.getElementById('btnRequestToken').addEventListener('click', ()=> { requestVerifyEmail(); });
+document.getElementById('btnResendToken').addEventListener('click', ()=> { requestVerifyEmail(); });
+document.getElementById('btnVerifyToken').addEventListener('click', ()=> { verifyToken(); });
+document.getElementById('btnCancelToken').addEventListener('click', ()=> { document.getElementById('tokenArea').style.display='none'; document.getElementById('redeemNotice').innerHTML=''; });
+document.getElementById('btnRedeem').addEventListener('click', ()=> { redeemCode(); });
 
 /* ================ CARDS ================= */
 async function renderCards(){
@@ -350,7 +335,7 @@ async function renderCards(){
 
 /* ================ QUIZ ================= */
 const topicSelect = document.getElementById('topicSelect');
-document.getElementById('loadTopicBtn').addEventListener('click', ()=> { loadTopicQuestions(topicSelect.value); tryUnlockAudio(); });
+document.getElementById('loadTopicBtn').addEventListener('click', ()=> loadTopicQuestions(topicSelect.value));
 document.getElementById('nextBtn').addEventListener('click', ()=> { if (!quizStarted) return; currentIndex++; renderQuestion(); });
 
 async function showTopicSelection(){
@@ -391,7 +376,7 @@ async function loadTopicQuestions(topic){
 function renderQuestion(){
   document.getElementById('explain').style.display='none';
   document.getElementById('nextBtn').disabled = true;
-  if (!POOL || POOL.length === 0) { document.getElementById('question').innerText = 'Nenhuma questão disponível.'; document.getElementById('opts').innerHTML = ''; quizStarted=false; return; }
+  if (!POOL || POOL.length === 0) { document.getElementById('question').innerText = 'Nenhuma questão disponível.'; document.getElementById('opts').innerHTML=''; quizStarted=false; return; }
   if (currentIndex >= POOL.length) { finishQuiz(); return; }
   const q = POOL[currentIndex];
   document.getElementById('question').innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
@@ -437,7 +422,7 @@ function finishQuiz(){
 }
 function restartQuiz(){ if (topicSelect && topicSelect.value) loadTopicQuestions(topicSelect.value); else loadTopicQuestions('Todos'); }
 
-/* SIMULADOS (idem ao anterior) */
+/* SIMULADOS e HISTORY - igual ao anterior (mantido) */
 let SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:null };
 async function showSimuladoSetup(){
   go('sim');
@@ -448,18 +433,12 @@ async function showSimuladoSetup(){
       <label class="small-muted"># Questões:</label>
       <select id="simSize"><option>20</option><option>30</option><option>50</option></select>
       <label class="small-muted"><input type="checkbox" id="simTimed"> Cronometrado</label>
-      <button class="btn primary action-btn" id="startSimBtn">Iniciar Simulado</button>
+      <button class="btn primary" id="startSimBtn">Iniciar Simulado</button>
     </div>
   `;
   document.getElementById('simArea').innerHTML = html;
-  const sel = document.getElementById('simTopic');
-  sel.innerHTML = '<option>Todos</option>';
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
-    const js = await res.json();
-    const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : [];
-    if (Array.isArray(arr)) arr.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
-  } catch(e){ console.warn('sim topics', e); }
+  const sel = document.getElementById('simTopic'); sel.innerHTML = '<option>Todos</option>';
+  try { const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'}); const js = await res.json(); const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : []; if (Array.isArray(arr)) arr.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); }); } catch(e){ console.warn('sim topics', e); }
   document.getElementById('startSimBtn').addEventListener('click', ()=> {
     const topic = document.getElementById('simTopic').value;
     const size = parseInt(document.getElementById('simSize').value,10);
@@ -499,16 +478,15 @@ function q_answer_letter(q){ const a=(q.correta||q.resposta||q.answer||'').toStr
 function q_option(q,letter){ if(!q) return ''; const up=q[letter]||q[letter.toUpperCase()]||q[letter.toLowerCase()]; if(up) return up; if(q.A && letter==='A') return q.A; if(q.B && letter==='B') return q.B; if(q.C && letter==='C') return q.C; if(q.D && letter==='D') return q.D; return ''; }
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+/* NAV */
+function go(target){ document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(target).classList.add('active'); if(target==='cards') renderCards(); if(target==='quiz') showTopicSelection(); if(target==='history') renderHistory(); }
+
 /* INIT */
 (function init(){
-  // sound
   if (localStorage.getItem(SOUND_KEY) === null) localStorage.setItem(SOUND_KEY,'1');
   updateSoundBtn();
-  // create/get device id
   getDeviceId();
-  // check server demo (async)
   checkServerDemoOnLoad();
-  // UI
   document.getElementById('quizSizeLabel').innerText = TEMPLATE_QUIZ_SIZE || 20;
   go('home');
 })();
