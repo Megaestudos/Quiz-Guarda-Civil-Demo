@@ -3,242 +3,212 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Guarda Civil — Plataforma de estudos</title>
+  <title>Guarda Civil — Plataforma de Estudos</title>
   <meta name="theme-color" content="#1e3c72"/>
   <style>
-    :root{
-      --bg1:#0f3b6b; --bg2:#1f6fb0;
-      --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92);
-      --accent: #00ff9d;
-      --card-scale: 1.10;
-      --success:#00c46a; --danger:#ff5c6c;
-    }
+    :root{ --bg1:#0f3b6b; --bg2:#1f6fb0; --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92); --accent:#00ff9d; --success:#00c46a; --danger:#ff5c6c; }
     html,body{height:100%;margin:0;padding:0}
-    body{
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:#fff; display:flex; align-items:center; justify-content:center;
-      padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px) 12px;
-    }
+    body{ font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; display:flex; align-items:center; justify-content:center; padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px) 12px; }
     .app { width:100%; max-width:980px; display:flex; flex-direction:column; gap:12px; }
-    .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); backdrop-filter: blur(6px); transform: scale(var(--card-scale)); transform-origin: top center; transition: transform .12s ease; }
+    .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); backdrop-filter: blur(6px); }
     .header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .title { font-size: clamp(18px,4vw,24px); margin:0; }
-    .subtitle { font-size:13px; color:#e6f7f0; margin-top:6px; }
     .controls { display:flex; gap:8px; align-items:center; }
     .btn { background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:8px 10px;border-radius:10px;font-weight:700; cursor:pointer; }
     .primary { background: linear-gradient(90deg,var(--accent), #2fb6ff); color:#012; border:none; }
-    .small { font-size:13px; color:#dfeff5; }
-    .pages { min-height:360px; }
-    .page { display:none; }
-    .page.active { display:block; animation: fadeIn .18s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-    .welcome { font-size:18px; margin:6px 0 12px 0; color:var(--muted); }
-    .tabs { display:flex; justify-content:space-around; gap:6px; margin-top:8px; }
-    .tabbtn { flex:1; padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;font-weight:800;cursor:pointer;text-align:center; }
-    .tabbtn.active{ background: rgba(255,255,255,0.06); }
-    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-    .card-small { padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
-    .flashcard { perspective:1000px; cursor:pointer; }
-    .flash-inner { transition: transform .5s; transform-style: preserve-3d; position:relative; min-height:120px; }
-    .flash-front, .flash-back { backface-visibility: hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
-    .flash-front { background:rgba(255,255,255,0.02); color:#fff; }
-    .flash-back { transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; }
-    .flash-inner.flipped { transform: rotateY(180deg); }
-    .opts { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
-    button.opt { padding:12px; min-height:62px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; }
-    .explain { margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
     .small-muted { font-size:12px; color:#cfeee3; }
-    .notice { padding:8px 10px; border-radius:8px; }
-    .notice.ok { background: rgba(0,196,106,0.12); color:var(--success); border:1px solid rgba(0,196,106,0.12); }
-    .notice.err { background: rgba(255,92,108,0.08); color:var(--danger); border:1px solid rgba(255,92,108,0.08); }
-
-    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-
-    /* responsive */
-    @media (max-width:520px){
-      .opts{ grid-template-columns:1fr; }
-      .controls{flex-wrap:wrap}
-      .title{font-size:18px}
-    }
+    .pages { min-height:360px; } .page{display:none;} .page.active{display:block;}
+    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    .card-small{ padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
+    .flashcard{ perspective:1000px; cursor:pointer; }
+    .flash-inner{ transition: transform .5s; transform-style: preserve-3d; position:relative; min-height:140px; }
+    .flash-front,.flash-back{ backface-visibility:hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
+    .flash-front{ background:rgba(255,255,255,0.02); color:#fff; }
+    .flash-back{ transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
+    .flash-inner.flipped{ transform: rotateY(180deg); }
+    .opts{ display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+    button.opt{ padding:12px; min-height:62px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; }
+    .explain{ margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
+    .notice{ padding:8px 10px; border-radius:8px; }
+    .notice.ok{ background: rgba(0,196,106,0.12); color:var(--success); }
+    .notice.err{ background: rgba(255,92,108,0.08); color:var(--danger); }
   </style>
 </head>
 <body>
-  <div class="app" id="appRoot">
-
-    <!-- HEADER -->
-    <div class="card header" id="cardHeader">
+  <div class="app">
+    <div class="card header">
       <div>
-        <h1 class="title">Guarda Civil — Plataforma de Estudos</h1>
-        <div class="subtitle">Simulados • Flashcards • Quiz • Resultados</div>
+        <h1 class="title">Guarda Civil — Plataforma</h1>
+        <div class="small-muted">Simulados • Flashcards • Quiz</div>
       </div>
       <div class="controls">
-        <div id="userBadge" class="small-muted">Acesso: <strong id="accessLabel">—</strong></div>
+        <div class="small-muted">Acesso: <strong id="accessLabel">—</strong></div>
         <button class="btn" id="btnOpenLogin">Entrar / Resgatar</button>
       </div>
     </div>
 
-    <!-- PAGES -->
-    <div class="card pages" id="pages">
-
-      <!-- HOME -->
+    <div class="card pages">
       <section id="home" class="page active">
-        <div class="welcome">Bem-vindo! Escolha um modo para estudar — flashcards, quiz ou simulados.</div>
-        <div class="grid">
-          <div class="card-small">
-            <h4>Estudo Rápido</h4>
-            <p class="small-muted">Flashcards por assunto — clique para virar.</p>
-            <div style="margin-top:8px">
-              <button class="btn primary" onclick="go('cards')">Ir para Cartões</button>
-            </div>
-          </div>
-          <div class="card-small">
-            <h4>Quiz por tópico</h4>
-            <p class="small-muted">Treine questões selecionadas por tópico.</p>
-            <div style="margin-top:8px">
-              <button class="btn primary" onclick="go('quiz')">Fazer Quiz</button>
-            </div>
-          </div>
-          <div class="card-small">
-            <h4>Simulados</h4>
-            <p class="small-muted">Modo prova — salve e acompanhe performance.</p>
-            <div style="margin-top:8px">
-              <button class="btn primary" onclick="showSimuladoSetup()">Iniciar Simulado</button>
-            </div>
-          </div>
-          <div class="card-small">
-            <h4>Histórico</h4>
-            <p class="small-muted">Seus simulados salvos e desempenho.</p>
-            <div style="margin-top:8px">
-              <button class="btn" onclick="go('history')">Ver Histórico</button>
-            </div>
-          </div>
+        <div class="small-muted">Bem-vindo! Escolha uma opção.</div>
+        <div class="grid" style="margin-top:12px">
+          <div class="card-small"><h4>Cartões</h4><p class="small-muted">Estudo rápido — clique para virar.</p><div style="margin-top:8px"><button class="btn primary" onclick="go('cards')">Ir para Cartões</button></div></div>
+          <div class="card-small"><h4>Quiz</h4><p class="small-muted">Questões por tópico.</p><div style="margin-top:8px"><button class="btn primary" onclick="go('quiz')">Fazer Quiz</button></div></div>
+          <div class="card-small"><h4>Simulados</h4><p class="small-muted">Modo prova.</p><div style="margin-top:8px"><button class="btn primary" onclick="showSimuladoSetup()">Iniciar Simulado</button></div></div>
+          <div class="card-small"><h4>Histórico</h4><p class="small-muted">Seus salvamentos locais.</p><div style="margin-top:8px"><button class="btn" onclick="go('history')">Ver Histórico</button></div></div>
         </div>
       </section>
 
-      <!-- STUDY / FLASHCARDS (cards) -->
       <section id="cards" class="page">
-        <h3>Cartões — clique para virar</h3>
-        <div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-top:12px;"></div>
+        <h3>Cartões</h3>
+        <div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-top:12px;"></div>
       </section>
 
-      <!-- QUIZ -->
       <section id="quiz" class="page">
-        <div class="row" style="margin-bottom:8px">
-          <label class="small" style="font-weight:800">Tópico:</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="small-muted">Tópico:</label>
           <select id="topicSelect"></select>
           <button class="btn" id="loadTopicBtn">Carregar</button>
           <div style="flex:1"></div>
-          <div class="small" id="quizNote">Questões por rodada: <strong id="quizSizeLabel"></strong></div>
+          <div class="small-muted">Questões: <strong id="quizSizeLabel"></strong></div>
         </div>
-
-        <div style="margin-top:10px" class="progress-area">
-          <div id="question" class="small-muted" style="white-space:pre-wrap;margin-top:12px">Aguardando escolha do tópico...</div>
-          <div id="opts" class="opts" style="margin-top:10px"></div>
-        </div>
-
-        <div class="explain" id="explain" style="display:none"></div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" id="btnRestart" onclick="restartQuiz()" style="display:none">🔄 Reiniciar</button>
-          <button class="btn primary" id="nextBtn" disabled>Próxima ➜</button>
-        </div>
+        <div id="question" style="margin-top:12px; white-space:pre-wrap" class="small-muted">Aguardando escolha do tópico...</div>
+        <div id="opts" class="opts" style="margin-top:10px"></div>
+        <div id="explain" class="explain" style="display:none"></div>
+        <div style="margin-top:12px"><button class="btn" id="btnRestart" style="display:none">🔄 Reiniciar</button> <button class="btn primary" id="nextBtn" disabled>Próxima ➜</button></div>
       </section>
 
-      <!-- SIMULADOS (usa módulo) -->
       <section id="sim" class="page">
         <h3>Simulados</h3>
         <div id="simArea"></div>
         <div id="simTimerArea" style="margin-top:8px"></div>
       </section>
 
-      <!-- HISTORY -->
       <section id="history" class="page">
         <h3>Histórico</h3>
         <div id="historyList"></div>
       </section>
-
     </div>
 
-    <!-- TABS -->
-    <div class="tabs card" role="navigation" aria-label="Navegação">
-      <button class="tabbtn active" data-target="home" onclick="go('home')">Início</button>
-      <button class="tabbtn" data-target="cards" onclick="go('cards')">Cartões</button>
-      <button class="tabbtn" data-target="quiz" onclick="go('quiz')">Quiz</button>
-      <button class="tabbtn" data-target="sim" onclick="go('sim')">Simulados</button>
-      <button class="tabbtn" data-target="history" onclick="go('history')">Histórico</button>
-    </div>
-
+    <div style="margin-top:12px;text-align:center;color:#dfeff5;font-size:12px">Demo dura <strong id="demoDurationLabel">7 dias</strong> a partir do resgate DEMO.</div>
   </div>
 
-  <!-- LOGIN / REDEEM MODAL (simples) -->
+  <!-- login modal -->
   <div id="loginModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:40">
     <div class="card" style="width:92%;max-width:480px">
-      <h3>Entrar / Resgatar compra</h3>
+      <h3>Entrar / Resgatar</h3>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
         <input id="inputName" placeholder="Seu nome" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
         <input id="inputEmail" placeholder="Seu e-mail (opcional)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
-        <input id="inputCode" placeholder="Código de compra (PIX / Voucher)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
+        <input id="inputCode" placeholder="Código de compra / Demo" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
         <div style="display:flex;gap:8px">
           <button class="btn primary" id="btnRedeem">Resgatar</button>
           <button class="btn" id="btnDemo">Demo</button>
           <button class="btn" id="btnCloseLogin">Fechar</button>
         </div>
-        <div id="redeemNotice" style="margin-top:6px"></div>
-        <div class="small-muted" style="margin-top:6px">Se já comprou via pagamento, insira o código que enviamos por e-mail. Se quiser testar, use Demo (acesso limitado).</div>
+        <div id="redeemNotice"></div>
       </div>
     </div>
   </div>
 
 <script>
-/* ===================== CONFIG ===================== */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpwUYSGPhzNqxtw8Dv8JU7P8I4QhvAvJXySBItERa5FK5e4Xy_gT_lC8S1t2D-ATJDyA/exec';
+/* ================= CONFIG ================= */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiYQ16PQNAEyoYYisDBFJe9BDH6HsYtLxpfQtggUF_loQhxEKuQlviPPDLNxB9atISrA/exec';
 const TEMPLATE_QUIZ_SIZE = 20;
+const DEMO_DAYS = 7; // <-- duração do demo (dias)
 
-/* ===================== STATE ===================== */
-let USER = { email: null, hasAccess: false };
+/* ================ STATE ================ */
+let USER = { email:null, hasAccess:false };
 let POOL = []; let currentIndex = 0; let score = 0; let quizStarted = false;
 
-/* ===================== Helpers ===================== */
-function q_text(q){ if(!q) return ''; return q.enunciado || q.question || q.pergunta || q.question || ''; }
-function q_topic(q){ if(!q) return ''; return q.assunto || q.materia || q.topico || ''; }
-function q_expl(q){ if(!q) return ''; return q.explicacao || q.explanation || q.resposta || q.explanation || ''; }
-function q_answer_letter(q){ const a = (q.correta || q.answer || q.resposta || '').toString().trim(); if (!a) return ''; return a.substr(0,1).toUpperCase(); }
-function q_option(q, letter){ const up = q[letter] || q[letter.toLowerCase()] || q[letter.toUpperCase()]; if (up !== undefined && up !== null && up !== '') return up; // fallback fields
-  // also check a,b,c lowercase
-  const low = q[letter.toLowerCase()]; if (low !== undefined && low !== null && low !== '') return low;
-  return '';
-}
-function linkify(text){ if(!text) return ''; let out = text.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); out = out.replace(/\n/g,'<br>'); return out; }
+/* ================ HELPERS ================ */
+function nowMs(){ return Date.now(); }
+function isoFromMs(ms){ return new Date(ms).toISOString(); }
+function daysToMs(d){ return d * 24 * 60 * 60 * 1000; }
 
-/* ===================== Navigation ===================== */
+function setDemoAccess(){
+  const expires = nowMs() + daysToMs(DEMO_DAYS);
+  localStorage.setItem('gcm_access','DEMO');
+  localStorage.setItem('gcm_demo_expires', String(expires));
+  updateAccessLabel();
+  alert(`Acesso DEMO ativado por ${DEMO_DAYS} dias.`);
+}
+
+function clearDemoAccess(){
+  localStorage.removeItem('gcm_access');
+  localStorage.removeItem('gcm_demo_expires');
+  updateAccessLabel();
+}
+
+function isDemoActive(){
+  const v = localStorage.getItem('gcm_access');
+  if (v !== 'DEMO') return false;
+  const exp = parseInt(localStorage.getItem('gcm_demo_expires') || '0',10);
+  if (!exp) return false;
+  if (nowMs() > exp) {
+    // demo expirou -> limpar
+    clearDemoAccess();
+    return false;
+  }
+  return true;
+}
+
+function demoRemainingMs(){
+  const exp = parseInt(localStorage.getItem('gcm_demo_expires') || '0',10);
+  if (!exp) return 0;
+  return Math.max(0, exp - nowMs());
+}
+
+/* ================ UI ACCESS BADGE ================ */
+function updateAccessLabel(){
+  const lbl = document.getElementById('accessLabel');
+  if (isDemoActive()){
+    const remMs = demoRemainingMs();
+    const days = Math.floor(remMs / (24*60*60*1000));
+    const hours = Math.floor((remMs % (24*60*60*1000)) / (60*60*1000));
+    lbl.innerText = `Demo — ${days}d ${hours}h`;
+    USER.hasAccess = true;
+    USER.email = localStorage.getItem('gcm_email') || null;
+    return;
+  }
+  const v = localStorage.getItem('gcm_access');
+  const email = localStorage.getItem('gcm_email');
+  if (v && v !== 'DEMO') {
+    lbl.innerText = `Pago (${v})${email ? ' — ' + email : ''}`;
+    USER.hasAccess = true;
+    USER.email = email || null;
+    return;
+  }
+  lbl.innerText = 'Sem acesso';
+  USER.hasAccess = false;
+  USER.email = null;
+}
+
+/* ================ NAV ================ */
 function go(target){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(target).classList.add('active');
-  document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
+  // lazy actions
   if (target === 'cards') renderCards();
   if (target === 'quiz') showTopicSelection();
   if (target === 'history') renderHistory();
 }
 
-/* ===================== Login / Redeem ===================== */
+/* ================ LOGIN / REDEEM ================ */
 document.getElementById('btnOpenLogin').addEventListener('click', ()=> openLogin());
 document.getElementById('btnCloseLogin').addEventListener('click', ()=> closeLogin());
 document.getElementById('btnDemo').addEventListener('click', ()=> { setDemoAccess(); closeLogin(); });
-document.getElementById('btnRedeem').addEventListener('click', ()=> { const code = document.getElementById('inputCode').value.trim(); const email = document.getElementById('inputEmail').value.trim(); const name = document.getElementById('inputName').value.trim(); redeemCode(name,email,code); });
+document.getElementById('btnRedeem').addEventListener('click', ()=> {
+  const code = document.getElementById('inputCode').value.trim();
+  const email = document.getElementById('inputEmail').value.trim();
+  const name = document.getElementById('inputName').value.trim();
+  redeemCode(name,email,code);
+});
 
 function openLogin(){ document.getElementById('inputCode').value=''; document.getElementById('inputEmail').value=''; document.getElementById('inputName').value=''; document.getElementById('redeemNotice').innerHTML=''; document.getElementById('loginModal').style.display='flex'; }
 function closeLogin(){ document.getElementById('loginModal').style.display='none'; }
 
-function setDemoAccess(){
-  USER.hasAccess = true;
-  localStorage.setItem('gcm_access','DEMO');
-  updateAccessLabel();
-  alert('Acesso DEMO ativado (limitado).');
-}
-
-/* Redeem via action=ativarCodigo (Code.gs v3) */
 async function redeemCode(name,email,code){
-  if (!code){ document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Informe o código de compra.</div>'; return; }
+  if (!code){ document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Informe o código.</div>'; return; }
   document.getElementById('redeemNotice').innerHTML = '<div class="notice">Validando...</div>';
   try {
     const url = `${SCRIPT_URL}?action=ativarCodigo&nome=${encodeURIComponent(name||'')}&email=${encodeURIComponent(email||'')}&codigo=${encodeURIComponent(code)}`;
@@ -246,81 +216,84 @@ async function redeemCode(name,email,code){
     const js = await res.json();
     console.log('ativarCodigo:', js);
     if (js && js.ok){
-      USER.hasAccess = true;
-      if (email) USER.email = email;
       localStorage.setItem('gcm_access', code);
       if (email) localStorage.setItem('gcm_email', email);
-      document.getElementById('redeemNotice').innerHTML = '<div class="notice ok">Código válido! Acesso liberado.</div>';
+      document.getElementById('redeemNotice').innerHTML = '<div class="notice ok">Código válido — acesso liberado.</div>';
       updateAccessLabel();
       setTimeout(()=> closeLogin(),900);
     } else {
       document.getElementById('redeemNotice').innerHTML = `<div class="notice err">${js && js.error ? js.error : 'Código inválido.'}</div>`;
     }
   } catch(e){
-    console.error('redeemCode err', e);
-    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro ao verificar código (ver console).</div>';
+    console.error(e);
+    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro na validação (veja console).</div>';
   }
 }
 
-/* Atualiza badge de acesso */
-function updateAccessLabel(){
-  const lbl = document.getElementById('accessLabel');
-  const v = localStorage.getItem('gcm_access');
-  const email = localStorage.getItem('gcm_email');
-  if (v) { lbl.innerText = (v==='DEMO' ? 'Demo' : 'Pago'); if (email) lbl.innerText += ' — ' + email; USER.hasAccess = true; USER.email = email || null; } else { lbl.innerText = 'Sem acesso'; USER.hasAccess = false; }
-}
-updateAccessLabel();
-
-/* ===================== Flashcards (cards) ===================== */
+/* ================ CARDS ================ */
 async function renderCards(){
   const container = document.getElementById('cardsContainer');
   container.innerHTML = '<div class="small-muted">Carregando cartões...</div>';
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getCards`, {cache:'no-store'});
     const js = await res.json();
-    console.log('getCards:', js);
-    let list = [];
-    if (js && js.ok && Array.isArray(js.cards)) list = js.cards;
-    else if (js && js.ok && Array.isArray(js)) list = js;
-    else if (js && js.cards && Array.isArray(js.cards)) list = js.cards;
-    if (!list || !list.length){
-      container.innerHTML = '<div class="small-muted">Nenhum cartão encontrado (aba "cartoes").</div>';
-      return;
+    console.log('getCards', js);
+    if (!js || !js.ok || !Array.isArray(js.cards) && !Array.isArray(js.cards || js.cards)) {
+      // older endpoints might return cards at root
+      const fallback = js.cards || js;
+      if (!Array.isArray(fallback) || !fallback.length) {
+        container.innerHTML = '<div class="small-muted">Nenhum cartão encontrado (verifique aba "cartoes").</div>'; return;
+      }
     }
+    const list = js.cards || js.cards || js.cards;
+    // render each card
     container.innerHTML = '';
-    for (const q of list){
-      const frontText = (q.pergunta || q.question || q.enunciado || '').toString();
-      const topicText = (q.topico || q.materia || q.assunto || '').toString();
-      const backText = (q.resposta || q.explanation || q.resposta || '').toString();
-      const wrapper = document.createElement('div'); wrapper.className='flashcard card-small';
+    for (const c of list){
+      const front = (c.pergunta || c.fields && (c.fields.pergunta || c.fields['pergunta'] ) || c.row && c.row[0] || '').toString();
+      const topic = (c.fields && (c.fields.assunto || c.fields.Assunto) ) || '';
+      const back = (c.respostaCombined || c.fields && (c.fields.resposta || c.fields.Resposta) || '').toString();
+      // create element
+      const wrap = document.createElement('div'); wrap.className='flashcard card-small';
       const inner = document.createElement('div'); inner.className='flash-inner';
-      const front = document.createElement('div'); front.className='flash-front';
-      const back = document.createElement('div'); back.className='flash-back';
-      front.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topicText}</div><div style="font-weight:800;margin-top:8px">${frontText}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para virar</div>`;
-      back.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topicText}</div><div style="font-weight:800;margin-top:8px">${backText}</div>`;
-      inner.appendChild(front); inner.appendChild(back); wrapper.appendChild(inner);
-      wrapper.addEventListener('click', ()=> inner.classList.toggle('flipped'));
-      container.appendChild(wrapper);
+      const f = document.createElement('div'); f.className='flash-front';
+      const b = document.createElement('div'); b.className='flash-back';
+      f.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topic}</div><div style="font-weight:800;margin-top:8px">${front}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver resposta</div>`;
+      // build back with full fields (show all non-empty fields)
+      let detailHtml = '';
+      if (c.fields){
+        for (const k of Object.keys(c.fields)){
+          const val = c.fields[k];
+          if (val === null || val === undefined || String(val).trim()==='') continue;
+          // skip pergunta if same
+          if (String(val).trim() === String(front).trim()) continue;
+          detailHtml += `<div style="margin-top:6px"><strong>${k}:</strong><div style="margin-top:4px">${String(val).replace(/\n/g,'<br>')}</div></div>`;
+        }
+      }
+      if (!detailHtml) detailHtml = back || '<div class="small-muted">Sem resposta</div>';
+      b.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topic}</div><div style="font-weight:800;margin-top:8px">Resposta</div><div style="margin-top:8px;color:#dfeff5">${detailHtml}</div>`;
+      inner.appendChild(f); inner.appendChild(b); wrap.appendChild(inner);
+      wrap.addEventListener('click', ()=> inner.classList.toggle('flipped'));
+      container.appendChild(wrap);
     }
   } catch(e){
     console.error('renderCards err', e);
-    container.innerHTML = '<div class="small-muted">Erro ao carregar cartões. Veja console.</div>';
+    container.innerHTML = '<div class="small-muted">Erro ao carregar cartões (veja console).</div>';
   }
 }
 
-/* ===================== QUIZ ===================== */
+/* ================ QUIZ ================ */
 const topicSelect = document.getElementById('topicSelect');
 document.getElementById('loadTopicBtn').addEventListener('click', ()=> loadTopicQuestions(topicSelect.value));
 document.getElementById('nextBtn').addEventListener('click', ()=> { if (!quizStarted) return; currentIndex++; renderQuestion(); });
 
 async function showTopicSelection(){
   topicSelect.innerHTML = '';
-  const opt = document.createElement('option'); opt.value='Todos'; opt.textContent='Todos'; topicSelect.appendChild(opt);
+  const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll);
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
     const js = await res.json();
-    const arr = js && (js.topicos || js.topics || js.topics) ? (js.topicos || js.topics) : [];
-    if (Array.isArray(arr)) arr.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o); });
+    const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : [];
+    if (Array.isArray(arr)) arr.forEach(t => { const o = document.createElement('option'); o.value=t; o.textContent=t; topicSelect.appendChild(o); });
   } catch(e){ console.warn('showTopicSelection err', e); }
 }
 showTopicSelection();
@@ -329,36 +302,29 @@ async function loadTopicQuestions(topic){
   document.getElementById('question').innerText = 'Carregando perguntas...';
   try {
     let data = [];
-    if (!topic || topic === 'Todos') {
+    if (!topic || topic === 'Todos'){
       const r = await fetch(`${SCRIPT_URL}?action=getQuestions`, {cache:'no-store'});
       const j = await r.json();
-      data = (j && (j.questoes || j.questions)) ? (j.questoes || j.questions) : [];
+      data = j && (j.questions || j.questoes) ? (j.questions || j.questoes) : [];
     } else {
       const r = await fetch(`${SCRIPT_URL}?action=getQuestionsByTopic&topico=${encodeURIComponent(topic)}`, {cache:'no-store'});
       const j = await r.json();
-      data = (j && (j.questoes || j.questions)) ? (j.questoes || j.questions) : [];
+      data = j && (j.questions || j.questoes) ? (j.questions || j.questoes) : [];
     }
-
     POOL = Array.isArray(data) ? data.slice(0, TEMPLATE_QUIZ_SIZE || 20) : [];
     currentIndex = 0; score = 0; quizStarted = true;
     document.getElementById('btnRestart').style.display = 'none';
     renderQuestion();
-  } catch (err){
-    console.error('Erro ao carregar questões:', err);
-    document.getElementById('question').innerText = 'Erro ao carregar questões.';
+  } catch(err){
+    console.error(err); document.getElementById('question').innerText = 'Erro ao carregar questões.'; 
   }
 }
 
 function renderQuestion(){
   document.getElementById('explain').style.display='none';
   document.getElementById('nextBtn').disabled = true;
-  if (!POOL || POOL.length === 0) {
-    document.getElementById('question').innerText = 'Nenhuma questão disponível.';
-    document.getElementById('opts').innerHTML = '';
-    quizStarted = false;
-    return;
-  }
-  if (currentIndex >= POOL.length) { finishQuiz(); return; }
+  if (!POOL || POOL.length === 0){ document.getElementById('question').innerText = 'Nenhuma questão disponível.'; document.getElementById('opts').innerHTML=''; quizStarted=false; return; }
+  if (currentIndex >= POOL.length){ finishQuiz(); return; }
   const q = POOL[currentIndex];
   document.getElementById('question').innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
   const optsDiv = document.getElementById('opts'); optsDiv.innerHTML = '';
@@ -369,7 +335,6 @@ function renderQuestion(){
     btn.onclick = ()=> selectOption(letter);
     optsDiv.appendChild(btn);
   });
-  updateProgressUI();
 }
 
 function selectOption(letter){
@@ -389,23 +354,29 @@ function selectOption(letter){
   document.getElementById('nextBtn').disabled = false;
 }
 
-function updateProgressUI(){
-  const total = POOL.length || 0;
-  document.getElementById('quizSizeLabel').innerText = total;
+function finishQuiz(){
+  quizStarted = false;
+  const total = POOL.length || 1;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('question').innerText = `✔ Você acertou ${score} de ${total} (${pct}%)`;
+  document.getElementById('opts').innerHTML = '';
+  document.getElementById('explain').style.display='block';
+  document.getElementById('explain').innerHTML = `<div style="color:#dfeff5">Salve localmente se quiser.</div><div style="margin-top:8px"><button class="btn" onclick="saveLocalResult({score:${score},total:${total},pct:${pct},mode:'quiz',date:new Date().toISOString()})">Salvar histórico</button></div>`;
+  document.getElementById('btnRestart').style.display='inline-block';
 }
 
-/* ===================== Simulados (módulo) ===================== */
+/* ======= Simulados (módulo) ======= */
 let SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:null };
 
 async function showSimuladoSetup(){
   go('sim');
   const html = `
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <label class="small">Tópico:</label>
+      <label class="small-muted">Tópico:</label>
       <select id="simTopic"></select>
-      <label class="small"># Questões:</label>
+      <label class="small-muted"># Questões:</label>
       <select id="simSize"><option>20</option><option>30</option><option>50</option></select>
-      <label class="small"><input type="checkbox" id="simTimed"> Cronometrado</label>
+      <label class="small-muted"><input type="checkbox" id="simTimed"> Cronometrado</label>
       <button class="btn primary" id="startSimBtn">Iniciar Simulado</button>
     </div>
   `;
@@ -415,7 +386,7 @@ async function showSimuladoSetup(){
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
     const js = await res.json();
-    const arr = js && (js.topicos || js.topics) ? (js.topicos || js.topics) : [];
+    const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : [];
     if (Array.isArray(arr)) arr.forEach(t => { const o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
   } catch(e){ console.warn('sim topics', e); }
   document.getElementById('startSimBtn').addEventListener('click', ()=> {
@@ -429,16 +400,15 @@ async function showSimuladoSetup(){
 async function startSimulado(cfg){
   SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:cfg };
   try {
-    const url = `${SCRIPT_URL}?action=getSimulado&qtd=${encodeURIComponent(cfg.size || 20)}`;
+    const url = `${SCRIPT_URL}?action=getSimulado&qtd=${encodeURIComponent(cfg.size||20)}`;
     const res = await fetch(url, {cache:'no-store'});
     const js = await res.json();
     let list = (js && js.ok && js.questoes) ? js.questoes : (Array.isArray(js) ? js : []);
-    // shuffle just in case
     for (let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-    SIM.pool = list.slice(0, Math.min(cfg.size || 20, list.length));
+    SIM.pool = list.slice(0, Math.min(cfg.size||20, list.length));
     SIM.answers = Array(SIM.pool.length).fill(null);
     SIM.idx = 0;
-    if (cfg.timed) { SIM.timeLeft = SIM.pool.length * 60; startSimTimer(); }
+    if (cfg.timed){ SIM.timeLeft = SIM.pool.length * 60; startSimTimer(); }
     renderSimuladoQuestion();
   } catch(e){ console.error('startSimulado err', e); document.getElementById('simArea').innerText = 'Erro ao iniciar simulado.'; }
 }
@@ -476,13 +446,13 @@ function finishSimulado(){
   if (SIM.timer) { clearInterval(SIM.timer); SIM.timer = null; }
   const total = SIM.pool.length; let sc = 0; const details = [];
   for (let i=0;i<total;i++){
-    const q = SIM.pool[i]; const chosen = SIM.answers[i]; const correct = (q.correta || q.correta || q.correta || '').toString().substr(0,1).toUpperCase();
+    const q = SIM.pool[i]; const chosen = SIM.answers[i]; const correct = (q.correta || q.correta || q.correta || q.correta || q.resposta || '').toString().substr(0,1).toUpperCase();
     const ok = chosen && chosen.toUpperCase() === correct;
     if (ok) sc++;
     details.push({id:q.id||i+1,question:q_text(q),chosen:chosen||null,correct:correct||null,ok});
   }
   const pct = Math.round((sc/total)*100);
-  document.getElementById('simArea').innerHTML = `<div>Resultado: ${sc}/${total} (${pct}%)</div><div style="margin-top:8px"><button class="btn primary" onclick="saveLocalResult({score:${sc},total:${total},pct:${pct},details:${JSON.stringify(details)},topic:'${SIM.config.topic}',timed:${SIM.config.timed},date:new Date().toISOString()})">Salvar resultado local</button> <button class="btn" onclick="reviewSimulado(${JSON.stringify(JSON.stringify(details))})">Rever erros</button></div>`;
+  document.getElementById('simArea').innerHTML = `<div>Resultado: ${sc}/${total} (${pct}%)</div><div style="margin-top:8px"><button class="btn primary" onclick="saveLocalResult({score:${sc},total:${total},pct:${pct},details:${JSON.stringify(details)},topic:'${SIM.config.topic}',timed:${SIM.config.timed},date:new Date().toISOString()})">Salvar local</button> <button class="btn" onclick="reviewSimulado(${JSON.stringify(JSON.stringify(details))})">Rever erros</button></div>`;
   saveLocalResult({score:sc,total:total,pct:pct,mode:'simulado',date:new Date().toISOString(),topic:SIM.config.topic});
 }
 
@@ -492,12 +462,11 @@ function reviewSimulado(jsonStr){
     const wrong = details.filter(d=>!d.ok);
     if (!wrong.length) { alert('Nenhum erro :-)'); return; }
     SIM.pool = wrong.map(w=> ({question:w.question, id:w.id}) );
-    SIM.idx = 0; renderSimuladoQuestion();
-    go('sim');
+    SIM.idx = 0; renderSimuladoQuestion(); go('sim');
   } catch(e){ console.error(e); alert('Erro ao revisar.'); }
 }
 
-/* ===================== Local History ===================== */
+/* ================ HISTORY ================ */
 function saveLocalResult(obj){
   const key = 'gcm_history_v1';
   const arr = JSON.parse(localStorage.getItem(key) || '[]');
@@ -506,26 +475,38 @@ function saveLocalResult(obj){
   alert('Resultado salvo localmente.');
   renderHistory();
 }
-
 function renderHistory(){
   const key = 'gcm_history_v1';
   const arr = JSON.parse(localStorage.getItem(key) || '[]');
   const container = document.getElementById('historyList');
   if (!arr || !arr.length) { container.innerHTML = '<div class="small-muted">Nenhum histórico salvo.</div>'; return; }
   container.innerHTML = '';
-  arr.forEach((r,i)=>{
+  arr.forEach(r=>{
     const div = document.createElement('div'); div.className='card-small'; div.style.marginBottom='8px';
     div.innerHTML = `<div><strong>${r.mode || 'simulado'}</strong> — ${r.score}/${r.total} (${r.pct}%) <span style="float:right;font-size:12px;color:#dfeff5">${r.date? new Date(r.date).toLocaleString():''}</span></div><div class="small-muted" style="margin-top:6px">${r.topic? 'Tópico: '+r.topic : ''}</div>`;
     container.appendChild(div);
   });
 }
 
-/* ===================== Inicialização ===================== */
+/* ================ UTIL para questões (compatibilidade) ================ */
+function q_text(q){ if(!q) return ''; return q.enunciado || q.pergunta || q.question || q.text || q.Question || ''; }
+function q_topic(q){ if(!q) return ''; return q.assunto || q.materia || q.topico || q.topic || ''; }
+function q_expl(q){ if(!q) return ''; return q.explicacao || q.explanation || q.resposta || q.explanation || ''; }
+function q_answer_letter(q){ const a = (q.correta || q.resposta || q.answer || '').toString().trim(); if (!a) return ''; return a.substr(0,1).toUpperCase(); }
+function q_option(q, letter){ letter = letter.toUpperCase(); if (!q) return ''; if (q[letter]) return q[letter]; if (q[letter.toLowerCase()]) return q[letter.toLowerCase()]; if (q.A && letter==='A') return q.A; if (q.B && letter==='B') return q.B; return ''; }
+
+/* ================ START ================ */
 (function init(){
+  // ensure demo info visible
+  document.getElementById('demoDurationLabel').innerText = `${DEMO_DAYS} dias`;
   updateAccessLabel();
   document.getElementById('quizSizeLabel').innerText = TEMPLATE_QUIZ_SIZE || 20;
+  // wire login open
+  document.getElementById('btnOpenLogin').addEventListener('click', ()=> openLogin());
+  // initial page
   go('home');
-  window.addEventListener('error', (e)=> console.error('window error', e));
+  // clear expired demo on load
+  isDemoActive();
 })();
 </script>
 </body>
