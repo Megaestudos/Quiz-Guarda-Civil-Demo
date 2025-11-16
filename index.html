@@ -3,127 +3,264 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Guarda Civil — Plataforma de Estudos</title>
+  <title>Guarda Civil — Plataforma de Estudos)</title>
   <meta name="theme-color" content="#1e3c72"/>
   <style>
-    :root{ --bg1:#0f3b6b; --bg2:#1f6fb0; --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92); --accent:#00ff9d; --success:#00c46a; --danger:#ff5c6c; }
+    :root{
+      --bg1:#0f3b6b; --bg2:#1f6fb0;
+      --card-bg: rgba(255,255,255,0.06);
+      --muted: rgba(255,255,255,0.92);
+      --accent: #00ff9d;
+      --accent-2: #2fb6ff;
+      --card-scale: 1.10;
+      --success:#00c46a; --danger:#ff5c6c;
+      --btn-padding: 10px 14px;
+      --action-height: 44px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+    }
+
     html,body{height:100%;margin:0;padding:0}
-    body{ font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; display:flex; align-items:center; justify-content:center; padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px) 12px; }
+    body{
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      padding:env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 12px) 12px;
+    }
+
     .app { width:100%; max-width:980px; display:flex; flex-direction:column; gap:12px; }
-    .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.28); backdrop-filter: blur(6px); }
+    .card { background: var(--card-bg); border-radius:14px; padding:16px; box-shadow:var(--shadow); backdrop-filter: blur(6px); }
     .header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .title { font-size: clamp(18px,4vw,24px); margin:0; }
+    .header > div:first-child { flex:1; min-width:0; }
+    .title { font-size: clamp(18px,4vw,22px); margin:0; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .subtitle { font-size:13px; color:#e6f7f0; margin-top:6px; }
     .controls { display:flex; gap:8px; align-items:center; }
-    .btn { background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:8px 10px;border-radius:10px;font-weight:700; cursor:pointer; }
-    .primary { background: linear-gradient(90deg,var(--accent), #2fb6ff); color:#012; border:none; }
+    .btn { background:transparent;border:1px solid rgba(255,255,255,0.12); color:#fff;padding:var(--btn-padding);border-radius:10px;font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:var(--action-height); min-width:84px; }
+    .btn[disabled]{ opacity:0.6; cursor:not-allowed; }
+    .primary { background: linear-gradient(90deg,var(--accent), var(--accent-2)); color:#012; border:none; box-shadow: 0 6px 18px rgba(0,0,0,0.14); }
+    .action-btn { height: var(--action-height); padding: 0 14px; font-size:15px; border-radius:10px; }
+    .small { font-size:13px; color:#dfeff5; }
     .small-muted { font-size:12px; color:#cfeee3; }
-    .pages { min-height:360px; } .page{display:none;} .page.active{display:block;}
+    .pages { min-height:360px; }
+    .page { display:none; }
+    .page.active { display:block; animation: fadeIn .18s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .welcome { font-size:18px; margin:6px 0 12px 0; color:var(--muted); }
+    .tabs { display:flex; justify-content:space-around; gap:6px; margin-top:8px; }
+    .tabbtn { flex:1; padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;font-weight:800;cursor:pointer;text-align:center; }
+    .tabbtn.active{ background: rgba(255,255,255,0.06); }
     .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-    .card-small{ padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
-    .flashcard{ perspective:1000px; cursor:pointer; }
-    .flash-inner{ transition: transform .5s; transform-style: preserve-3d; position:relative; min-height:140px; }
-    .flash-front,.flash-back{ backface-visibility:hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
-    .flash-front{ background:rgba(255,255,255,0.02); color:#fff; }
-    .flash-back{ transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
-    .flash-inner.flipped{ transform: rotateY(180deg); }
-    .opts{ display:grid; gap:10px; grid-template-columns:1fr 1fr; }
-    button.opt{ padding:12px; min-height:62px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; }
-    .explain{ margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
-    .notice{ padding:8px 10px; border-radius:8px; }
-    .notice.ok{ background: rgba(0,196,106,0.12); color:var(--success); }
-    .notice.err{ background: rgba(255,92,108,0.08); color:var(--danger); }
+    .card-small { padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
+    .flashcard { perspective:1000px; cursor:pointer; }
+    .flash-inner { transition: transform .5s; transform-style: preserve-3d; position:relative; min-height:140px; }
+    .flash-front, .flash-back { backface-visibility: hidden; position:absolute; inset:0; border-radius:10px; padding:14px; display:flex; flex-direction:column; justify-content:center; }
+    .flash-front { background:rgba(255,255,255,0.02); color:#fff; }
+    .flash-back { transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; white-space:pre-wrap; }
+    .flash-inner.flipped { transform: rotateY(180deg); }
+    .opts { display:grid; gap:10px; grid-template-columns:1fr 1fr; margin-top:8px; }
+    button.opt { padding:12px; min-height:62px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:#fff; color:#123; font-weight:800; cursor:pointer; text-align:left; transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease; }
+    button.opt:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+    button.opt:disabled { opacity:0.85; cursor:not-allowed; transform:none; box-shadow:none; }
+    .opt.correct { background: #e9fff2; border-color: #2fa764; color:#064; box-shadow: 0 8px 20px rgba(47,167,100,0.06); }
+    .opt.wrong { background: #fff0f0; border-color: #ff6b6b; color:#6b1010; box-shadow: 0 8px 20px rgba(255,107,107,0.06); }
+    .explain { margin-top:12px; padding:12px; background:rgba(255,255,255,0.04); border-radius:10px; color:#fff; }
+    .notice { padding:8px 10px; border-radius:8px; }
+    .notice.ok { background: rgba(0,196,106,0.12); color:var(--success); border:1px solid rgba(0,196,106,0.12); }
+    .notice.err { background: rgba(255,92,108,0.08); color:var(--danger); border:1px solid rgba(255,92,108,0.08); }
+
+    /* mobile tweaks */
+    @media (max-width:520px){
+      .header { flex-wrap:wrap; align-items:center; }
+      .header > div:first-child { order:1; flex:1 1 100%; min-width:0; }
+      .controls { order:2; flex:1 1 100%; display:flex; gap:8px; justify-content:flex-start; margin-top:8px; }
+      .title { font-size:16px; white-space:normal; }
+      .opts { grid-template-columns:1fr; }
+      .card-small{ padding:10px; }
+      .btn { min-width:64px; height:40px; }
+      .action-btn { height:40px; font-size:14px; }
+    }
+
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="card header">
+  <div class="app" id="appRoot">
+
+    <!-- HEADER -->
+    <div class="card header" id="cardHeader">
       <div>
-        <h1 class="title">Guarda Civil — Plataforma</h1>
-        <div class="small-muted">Simulados • Flashcards • Quiz</div>
+        <h1 class="title">Guarda Civil — Plataforma de Estudos</h1>
+        <div class="subtitle">Simulados • Flashcards • Quiz • Resultados</div>
       </div>
       <div class="controls">
-        <div class="small-muted">Acesso: <strong id="accessLabel">—</strong></div>
+        <div id="userBadge" class="small-muted">Acesso: <strong id="accessLabel">—</strong></div>
+        <button class="btn" id="soundToggle" title="Ativar/Desativar som">🔊 On</button>
         <button class="btn" id="btnOpenLogin">Entrar / Resgatar</button>
       </div>
     </div>
 
-    <div class="card pages">
+    <!-- PAGES -->
+    <div class="card pages" id="pages">
+
+      <!-- HOME -->
       <section id="home" class="page active">
-        <div class="small-muted">Bem-vindo! Escolha uma opção.</div>
-        <div class="grid" style="margin-top:12px">
-          <div class="card-small"><h4>Cartões</h4><p class="small-muted">Estudo rápido — clique para virar.</p><div style="margin-top:8px"><button class="btn primary" onclick="go('cards')">Ir para Cartões</button></div></div>
-          <div class="card-small"><h4>Quiz</h4><p class="small-muted">Questões por tópico.</p><div style="margin-top:8px"><button class="btn primary" onclick="go('quiz')">Fazer Quiz</button></div></div>
-          <div class="card-small"><h4>Simulados</h4><p class="small-muted">Modo prova.</p><div style="margin-top:8px"><button class="btn primary" onclick="showSimuladoSetup()">Iniciar Simulado</button></div></div>
-          <div class="card-small"><h4>Histórico</h4><p class="small-muted">Seus salvamentos locais.</p><div style="margin-top:8px"><button class="btn" onclick="go('history')">Ver Histórico</button></div></div>
+        <div class="welcome">Bem-vindo! Escolha um modo para estudar — flashcards, quiz ou simulados.</div>
+        <div class="grid">
+          <div class="card-small">
+            <h4>Estudo Rápido</h4>
+            <p class="small-muted">Flashcards por assunto — clique para virar.</p>
+            <div style="margin-top:8px">
+              <button class="btn primary action-btn" onclick="go('cards')">Ir para Cartões</button>
+            </div>
+          </div>
+          <div class="card-small">
+            <h4>Quiz por tópico</h4>
+            <p class="small-muted">Treine questões selecionadas por tópico.</p>
+            <div style="margin-top:8px">
+              <button class="btn primary action-btn" onclick="go('quiz')">Fazer Quiz</button>
+            </div>
+          </div>
+          <div class="card-small">
+            <h4>Simulados</h4>
+            <p class="small-muted">Modo prova — salve e acompanhe performance.</p>
+            <div style="margin-top:8px">
+              <button class="btn primary action-btn" onclick="showSimuladoSetup()">Iniciar Simulado</button>
+            </div>
+          </div>
+          <div class="card-small">
+            <h4>Histórico</h4>
+            <p class="small-muted">Seus simulados salvos e desempenho.</p>
+            <div style="margin-top:8px">
+              <button class="btn action-btn" onclick="go('history')">Ver Histórico</button>
+            </div>
+          </div>
         </div>
       </section>
 
+      <!-- CARDS -->
       <section id="cards" class="page">
-        <h3>Cartões</h3>
+        <h3>Cartões — clique para virar</h3>
         <div id="cardsContainer" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-top:12px;"></div>
       </section>
 
+      <!-- QUIZ -->
       <section id="quiz" class="page">
-        <div style="display:flex;gap:8px;align-items:center">
-          <label class="small-muted">Tópico:</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label class="small" style="font-weight:800">Tópico:</label>
           <select id="topicSelect"></select>
-          <button class="btn" id="loadTopicBtn">Carregar</button>
+          <button id="loadTopicBtn" class="btn primary action-btn">Carregar</button>
           <div style="flex:1"></div>
-          <div class="small-muted">Questões: <strong id="quizSizeLabel"></strong></div>
+          <div class="small" id="quizNote">Questões por rodada: <strong id="quizSizeLabel"></strong></div>
         </div>
-        <div id="question" style="margin-top:12px; white-space:pre-wrap" class="small-muted">Aguardando escolha do tópico...</div>
-        <div id="opts" class="opts" style="margin-top:10px"></div>
-        <div id="explain" class="explain" style="display:none"></div>
-        <div style="margin-top:12px"><button class="btn" id="btnRestart" style="display:none">🔄 Reiniciar</button> <button class="btn primary" id="nextBtn" disabled>Próxima ➜</button></div>
+
+        <div style="margin-top:10px" class="progress-area">
+          <div id="question" class="small-muted" style="white-space:pre-wrap;margin-top:12px">Aguardando escolha do tópico...</div>
+          <div id="opts" class="opts" style="margin-top:10px"></div>
+        </div>
+
+        <div class="explain" id="explain" style="display:none"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="btnRestart" onclick="restartQuiz()" style="display:none">🔄 Reiniciar</button>
+          <button class="btn primary action-btn" id="nextBtn" disabled>Próxima ➜</button>
+        </div>
       </section>
 
+      <!-- SIMULADOS -->
       <section id="sim" class="page">
         <h3>Simulados</h3>
         <div id="simArea"></div>
         <div id="simTimerArea" style="margin-top:8px"></div>
       </section>
 
+      <!-- HISTORY -->
       <section id="history" class="page">
         <h3>Histórico</h3>
         <div id="historyList"></div>
       </section>
+
     </div>
 
-    <div style="margin-top:12px;text-align:center;color:#dfeff5;font-size:12px">Demo dura <strong id="demoDurationLabel">7 dias</strong> a partir do resgate DEMO.</div>
+    <!-- TABS -->
+    <div class="tabs card" role="navigation" aria-label="Navegação">
+      <button class="tabbtn active" data-target="home" onclick="go('home')">Início</button>
+      <button class="tabbtn" data-target="cards" onclick="go('cards')">Cartões</button>
+      <button class="tabbtn" data-target="quiz" onclick="go('quiz')">Quiz</button>
+      <button class="tabbtn" data-target="sim" onclick="go('sim')">Simulados</button>
+      <button class="tabbtn" data-target="history" onclick="go('history')">Histórico</button>
+    </div>
+
   </div>
 
-  <!-- login modal -->
+  <!-- LOGIN / REDEEM MODAL (simples) -->
   <div id="loginModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:40">
     <div class="card" style="width:92%;max-width:480px">
-      <h3>Entrar / Resgatar</h3>
+      <h3>Entrar / Resgatar compra</h3>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
         <input id="inputName" placeholder="Seu nome" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
         <input id="inputEmail" placeholder="Seu e-mail (opcional)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
-        <input id="inputCode" placeholder="Código de compra / Demo" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
+        <input id="inputCode" placeholder="Código de compra (PIX / Voucher)" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)"/>
         <div style="display:flex;gap:8px">
           <button class="btn primary" id="btnRedeem">Resgatar</button>
           <button class="btn" id="btnDemo">Demo</button>
           <button class="btn" id="btnCloseLogin">Fechar</button>
         </div>
-        <div id="redeemNotice"></div>
+        <div id="redeemNotice" style="margin-top:6px"></div>
+        <div class="small-muted" style="margin-top:6px">Se já comprou via pagamento, insira o código que enviamos por e-mail. Se quiser testar, use Demo (acesso limitado).</div>
       </div>
     </div>
   </div>
 
 <script>
-/* ================= CONFIG ================= */
+/* ===================== CONFIG ===================== */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiYQ16PQNAEyoYYisDBFJe9BDH6HsYtLxpfQtggUF_loQhxEKuQlviPPDLNxB9atISrA/exec';
 const TEMPLATE_QUIZ_SIZE = 20;
-const DEMO_DAYS = 1; // <-- duração do demo (dias)
+const DEMO_DAYS = 1;
+const SOUND_KEY = 'gcm_sound_on';
 
-/* ================ STATE ================ */
-let USER = { email:null, hasAccess:false };
+/* ===================== STATE ===================== */
+let USER = { email: null, hasAccess: false };
 let POOL = []; let currentIndex = 0; let score = 0; let quizStarted = false;
+let audioCtx = null;
 
-/* ================ HELPERS ================ */
+/* ===================== AUDIO ===================== */
+function ensureAudio(){
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(e){ audioCtx = null; }
+}
+function playTone(freq, dur=120, type='sine', gainVal=0.05){
+  if (!isSoundOn()) return;
+  ensureAudio();
+  if (!audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = gainVal;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  setTimeout(()=> { try { o.stop(); o.disconnect(); g.disconnect(); } catch(e){} }, dur);
+}
+function playCorrect(){ playTone(880,120,'sine',0.06); }
+function playWrong(){ playTone(220,220,'sawtooth',0.08); }
+
+function isSoundOn(){ return localStorage.getItem(SOUND_KEY) !== '0'; }
+function setSoundOn(v){ localStorage.setItem(SOUND_KEY, v ? '1' : '0'); updateSoundBtn(); }
+function updateSoundBtn(){ document.getElementById('soundToggle').innerText = isSoundOn() ? '🔊 On' : '🔇 Off'; }
+document.getElementById('soundToggle').addEventListener('click', ()=> { setSoundOn(!isSoundOn()); if (isSoundOn()) tryUnlockAudio(); });
+
+function tryUnlockAudio(){
+  // create and resume audio context on first user interaction
+  try {
+    ensureAudio();
+    if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+  } catch(e){}
+}
+
+/* unlock audio on first user gesture (tap/click) */
+window.addEventListener('pointerup', function unlockAudio(){ tryUnlockAudio(); window.removeEventListener('pointerup', unlockAudio); }, { once:true });
+
+/* ===================== Demo / Access ===================== */
 function nowMs(){ return Date.now(); }
-function isoFromMs(ms){ return new Date(ms).toISOString(); }
-function daysToMs(d){ return d * 24 * 60 * 60 * 1000; }
+function daysToMs(d){ return d * 24*60*60*1000; }
 
 function setDemoAccess(){
   const expires = nowMs() + daysToMs(DEMO_DAYS);
@@ -132,77 +269,54 @@ function setDemoAccess(){
   updateAccessLabel();
   alert(`Acesso DEMO ativado por ${DEMO_DAYS} dias.`);
 }
-
 function clearDemoAccess(){
-  localStorage.removeItem('gcm_access');
-  localStorage.removeItem('gcm_demo_expires');
+  localStorage.removeItem('gcm_access'); localStorage.removeItem('gcm_demo_expires'); localStorage.removeItem('gcm_email');
   updateAccessLabel();
 }
-
 function isDemoActive(){
   const v = localStorage.getItem('gcm_access');
   if (v !== 'DEMO') return false;
   const exp = parseInt(localStorage.getItem('gcm_demo_expires') || '0',10);
   if (!exp) return false;
-  if (nowMs() > exp) {
-    // demo expirou -> limpar
-    clearDemoAccess();
-    return false;
-  }
+  if (nowMs() > exp) { clearDemoAccess(); return false; }
   return true;
 }
-
 function demoRemainingMs(){
   const exp = parseInt(localStorage.getItem('gcm_demo_expires') || '0',10);
   if (!exp) return 0;
   return Math.max(0, exp - nowMs());
 }
-
-/* ================ UI ACCESS BADGE ================ */
 function updateAccessLabel(){
   const lbl = document.getElementById('accessLabel');
   if (isDemoActive()){
-    const remMs = demoRemainingMs();
-    const days = Math.floor(remMs / (24*60*60*1000));
-    const hours = Math.floor((remMs % (24*60*60*1000)) / (60*60*1000));
+    const rem = demoRemainingMs();
+    const days = Math.floor(rem / (24*60*60*1000));
+    const hours = Math.floor((rem % (24*60*60*1000)) / (60*60*1000));
     lbl.innerText = `Demo — ${days}d ${hours}h`;
-    USER.hasAccess = true;
-    USER.email = localStorage.getItem('gcm_email') || null;
+    USER.hasAccess = true; USER.email = localStorage.getItem('gcm_email') || null;
     return;
   }
   const v = localStorage.getItem('gcm_access');
   const email = localStorage.getItem('gcm_email');
-  if (v && v !== 'DEMO') {
-    lbl.innerText = `Pago (${v})${email ? ' — ' + email : ''}`;
-    USER.hasAccess = true;
-    USER.email = email || null;
-    return;
-  }
-  lbl.innerText = 'Sem acesso';
-  USER.hasAccess = false;
-  USER.email = null;
+  if (v && v !== 'DEMO'){ lbl.innerText = `Pago (${v})${email ? ' — ' + email : ''}`; USER.hasAccess = true; USER.email = email||null; return; }
+  lbl.innerText = 'Sem acesso'; USER.hasAccess = false; USER.email = null;
 }
 
-/* ================ NAV ================ */
+/* ===================== NAVIGATION ===================== */
 function go(target){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(target).classList.add('active');
-  // lazy actions
+  document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
   if (target === 'cards') renderCards();
   if (target === 'quiz') showTopicSelection();
   if (target === 'history') renderHistory();
 }
 
-/* ================ LOGIN / REDEEM ================ */
+/* ===================== LOGIN / REDEEM ===================== */
 document.getElementById('btnOpenLogin').addEventListener('click', ()=> openLogin());
 document.getElementById('btnCloseLogin').addEventListener('click', ()=> closeLogin());
 document.getElementById('btnDemo').addEventListener('click', ()=> { setDemoAccess(); closeLogin(); });
-document.getElementById('btnRedeem').addEventListener('click', ()=> {
-  const code = document.getElementById('inputCode').value.trim();
-  const email = document.getElementById('inputEmail').value.trim();
-  const name = document.getElementById('inputName').value.trim();
-  redeemCode(name,email,code);
-});
+document.getElementById('btnRedeem').addEventListener('click', ()=> { const code = document.getElementById('inputCode').value.trim(); const email = document.getElementById('inputEmail').value.trim(); const name = document.getElementById('inputName').value.trim(); redeemCode(name,email,code); });
 
 function openLogin(){ document.getElementById('inputCode').value=''; document.getElementById('inputEmail').value=''; document.getElementById('inputName').value=''; document.getElementById('redeemNotice').innerHTML=''; document.getElementById('loginModal').style.display='flex'; }
 function closeLogin(){ document.getElementById('loginModal').style.display='none'; }
@@ -214,7 +328,6 @@ async function redeemCode(name,email,code){
     const url = `${SCRIPT_URL}?action=ativarCodigo&nome=${encodeURIComponent(name||'')}&email=${encodeURIComponent(email||'')}&codigo=${encodeURIComponent(code)}`;
     const res = await fetch(url, {cache:'no-store'});
     const js = await res.json();
-    console.log('ativarCodigo:', js);
     if (js && js.ok){
       localStorage.setItem('gcm_access', code);
       if (email) localStorage.setItem('gcm_email', email);
@@ -226,51 +339,40 @@ async function redeemCode(name,email,code){
     }
   } catch(e){
     console.error(e);
-    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro na validação (veja console).</div>';
+    document.getElementById('redeemNotice').innerHTML = '<div class="notice err">Erro na validação (ver console).</div>';
   }
 }
 
-/* ================ CARDS ================ */
+/* ===================== CARDS ===================== */
 async function renderCards(){
   const container = document.getElementById('cardsContainer');
   container.innerHTML = '<div class="small-muted">Carregando cartões...</div>';
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getCards`, {cache:'no-store'});
     const js = await res.json();
-    console.log('getCards', js);
-    if (!js || !js.ok || !Array.isArray(js.cards) && !Array.isArray(js.cards || js.cards)) {
-      // older endpoints might return cards at root
-      const fallback = js.cards || js;
-      if (!Array.isArray(fallback) || !fallback.length) {
-        container.innerHTML = '<div class="small-muted">Nenhum cartão encontrado (verifique aba "cartoes").</div>'; return;
-      }
-    }
-    const list = js.cards || js.cards || js.cards;
-    // render each card
+    const list = js && js.ok && Array.isArray(js.cards) ? js.cards : (Array.isArray(js) ? js : (js.cards || []));
+    if (!list || !list.length){ container.innerHTML = '<div class="small-muted">Nenhum cartão encontrado (verifique aba "cartoes").</div>'; return; }
     container.innerHTML = '';
     for (const c of list){
-      const front = (c.pergunta || c.fields && (c.fields.pergunta || c.fields['pergunta'] ) || c.row && c.row[0] || '').toString();
-      const topic = (c.fields && (c.fields.assunto || c.fields.Assunto) ) || '';
-      const back = (c.respostaCombined || c.fields && (c.fields.resposta || c.fields.Resposta) || '').toString();
-      // create element
+      const front = (c.pergunta || (c.fields && (c.fields.pergunta || c.fields.Pergunta)) || (c.row && c.row[0]) || '').toString();
+      const topic = (c.fields && (c.fields.assunto || c.fields.Assunto)) || '';
+      const backHtmlParts = [];
+      if (c.fields){
+        for (const key of Object.keys(c.fields)){
+          const val = c.fields[key];
+          if (val === null || val === undefined || String(val).trim()==='') continue;
+          if (String(val).trim() === String(front).trim()) continue;
+          backHtmlParts.push(`<div style="margin-top:6px"><strong>${escapeHtml(key)}:</strong><div style="margin-top:4px">${escapeHtml(String(val)).replace(/\n/g,'<br>')}</div></div>`);
+        }
+      }
+      if (!backHtmlParts.length && c.respostaCombined) backHtmlParts.push(`<div>${escapeHtml(String(c.respostaCombined)).replace(/\n/g,'<br>')}</div>`);
+      const backHtml = backHtmlParts.join('');
       const wrap = document.createElement('div'); wrap.className='flashcard card-small';
       const inner = document.createElement('div'); inner.className='flash-inner';
       const f = document.createElement('div'); f.className='flash-front';
       const b = document.createElement('div'); b.className='flash-back';
-      f.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topic}</div><div style="font-weight:800;margin-top:8px">${front}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver resposta</div>`;
-      // build back with full fields (show all non-empty fields)
-      let detailHtml = '';
-      if (c.fields){
-        for (const k of Object.keys(c.fields)){
-          const val = c.fields[k];
-          if (val === null || val === undefined || String(val).trim()==='') continue;
-          // skip pergunta if same
-          if (String(val).trim() === String(front).trim()) continue;
-          detailHtml += `<div style="margin-top:6px"><strong>${k}:</strong><div style="margin-top:4px">${String(val).replace(/\n/g,'<br>')}</div></div>`;
-        }
-      }
-      if (!detailHtml) detailHtml = back || '<div class="small-muted">Sem resposta</div>';
-      b.innerHTML = `<div style="font-size:12px;color:#dfeff5">${topic}</div><div style="font-weight:800;margin-top:8px">Resposta</div><div style="margin-top:8px;color:#dfeff5">${detailHtml}</div>`;
+      f.innerHTML = `<div style="font-size:12px;color:#dfeff5">${escapeHtml(topic)}</div><div style="font-weight:800;margin-top:8px">${escapeHtml(front)}</div><div style="margin-top:8px;font-size:13px;color:#bfeadf">Clique para ver resposta</div>`;
+      b.innerHTML = `<div style="font-size:12px;color:#dfeff5">${escapeHtml(topic)}</div><div style="font-weight:800;margin-top:8px">Resposta</div><div style="margin-top:8px;color:#dfeff5">${backHtml || '<div class="small-muted">Sem resposta</div>'}</div>`;
       inner.appendChild(f); inner.appendChild(b); wrap.appendChild(inner);
       wrap.addEventListener('click', ()=> inner.classList.toggle('flipped'));
       container.appendChild(wrap);
@@ -281,14 +383,14 @@ async function renderCards(){
   }
 }
 
-/* ================ QUIZ ================ */
+/* ===================== QUIZ ===================== */
 const topicSelect = document.getElementById('topicSelect');
-document.getElementById('loadTopicBtn').addEventListener('click', ()=> loadTopicQuestions(topicSelect.value));
+document.getElementById('loadTopicBtn').addEventListener('click', ()=> { loadTopicQuestions(topicSelect.value); tryUnlockAudio(); });
 document.getElementById('nextBtn').addEventListener('click', ()=> { if (!quizStarted) return; currentIndex++; renderQuestion(); });
 
 async function showTopicSelection(){
   topicSelect.innerHTML = '';
-  const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll);
+  const opt = document.createElement('option'); opt.value='Todos'; opt.textContent='Todos'; topicSelect.appendChild(opt);
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
     const js = await res.json();
@@ -315,26 +417,34 @@ async function loadTopicQuestions(topic){
     currentIndex = 0; score = 0; quizStarted = true;
     document.getElementById('btnRestart').style.display = 'none';
     renderQuestion();
-  } catch(err){
-    console.error(err); document.getElementById('question').innerText = 'Erro ao carregar questões.'; 
+  } catch (err){
+    console.error('Erro ao carregar questões:', err);
+    document.getElementById('question').innerText = 'Erro ao carregar questões.';
   }
 }
 
 function renderQuestion(){
   document.getElementById('explain').style.display='none';
   document.getElementById('nextBtn').disabled = true;
-  if (!POOL || POOL.length === 0){ document.getElementById('question').innerText = 'Nenhuma questão disponível.'; document.getElementById('opts').innerHTML=''; quizStarted=false; return; }
-  if (currentIndex >= POOL.length){ finishQuiz(); return; }
+  if (!POOL || POOL.length === 0) {
+    document.getElementById('question').innerText = 'Nenhuma questão disponível.';
+    document.getElementById('opts').innerHTML = '';
+    quizStarted = false;
+    return;
+  }
+  if (currentIndex >= POOL.length) { finishQuiz(); return; }
   const q = POOL[currentIndex];
   document.getElementById('question').innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
   const optsDiv = document.getElementById('opts'); optsDiv.innerHTML = '';
   ['A','B','C','D'].forEach(letter=>{
     const txt = q_option(q, letter);
     if (!txt) return;
-    const btn = document.createElement('button'); btn.className='opt'; btn.innerText = `${letter}) ${txt}`;
+    const btn = document.createElement('button'); btn.className = 'opt'; btn.innerText = `${letter}) ${txt}`;
     btn.onclick = ()=> selectOption(letter);
     optsDiv.appendChild(btn);
   });
+  // update quiz size label
+  document.getElementById('quizSizeLabel').innerText = POOL.length || TEMPLATE_QUIZ_SIZE;
 }
 
 function selectOption(letter){
@@ -344,9 +454,20 @@ function selectOption(letter){
   const chosen = letter.toUpperCase();
   document.querySelectorAll('.opt').forEach(el => el.disabled = true);
   const elChosen = Array.from(document.querySelectorAll('.opt')).find(b => b.innerText.startsWith(chosen + ')'));
+  // mark correct button
+  const elCorrect = Array.from(document.querySelectorAll('.opt')).find(b => b.innerText.startsWith((correct||'') + ')'));
+  if (elCorrect) elCorrect.classList.add('correct');
   if (elChosen){
-    if (chosen === correct) { elChosen.style.borderColor = 'var(--success)'; score++; }
-    else { elChosen.style.borderColor = 'var(--danger)'; }
+    if (chosen === correct) {
+      elChosen.classList.add('correct'); playCorrect();
+      score++;
+    } else {
+      elChosen.classList.add('wrong'); playWrong();
+      if (elCorrect && elCorrect !== elChosen) elCorrect.classList.add('correct');
+    }
+  } else {
+    // if chosen not found (edge), still play sound
+    if (chosen !== correct) playWrong(); else playCorrect();
   }
   const title = (chosen === correct) ? '✅ Correto!' : ('❌ Errado! Resposta: ' + (correct || '—'));
   document.getElementById('explain').style.display='block';
@@ -361,11 +482,12 @@ function finishQuiz(){
   document.getElementById('question').innerText = `✔ Você acertou ${score} de ${total} (${pct}%)`;
   document.getElementById('opts').innerHTML = '';
   document.getElementById('explain').style.display='block';
-  document.getElementById('explain').innerHTML = `<div style="color:#dfeff5">Salve localmente se quiser.</div><div style="margin-top:8px"><button class="btn" onclick="saveLocalResult({score:${score},total:${total},pct:${pct},mode:'quiz',date:new Date().toISOString()})">Salvar histórico</button></div>`;
-  document.getElementById('btnRestart').style.display='inline-block';
+  document.getElementById('explain').innerHTML = `<div style="color:#dfeff5">Salve seu resultado no histórico se quiser.</div><div style="margin-top:8px"><button class="btn primary" onclick="saveLocalResult({score:${score},total:${total},pct:${pct},mode:'quiz',date:new Date().toISOString()})">Salvar no histórico</button></div>`;
+  document.getElementById('btnRestart').style.display = 'inline-block';
 }
+function restartQuiz(){ if (topicSelect && topicSelect.value) loadTopicQuestions(topicSelect.value); else loadTopicQuestions('Todos'); }
 
-/* ======= Simulados (módulo) ======= */
+/* ===================== Simulados (módulo) ===================== */
 let SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:null };
 
 async function showSimuladoSetup(){
@@ -377,7 +499,7 @@ async function showSimuladoSetup(){
       <label class="small-muted"># Questões:</label>
       <select id="simSize"><option>20</option><option>30</option><option>50</option></select>
       <label class="small-muted"><input type="checkbox" id="simTimed"> Cronometrado</label>
-      <button class="btn primary" id="startSimBtn">Iniciar Simulado</button>
+      <button class="btn primary action-btn" id="startSimBtn">Iniciar Simulado</button>
     </div>
   `;
   document.getElementById('simArea').innerHTML = html;
@@ -387,7 +509,7 @@ async function showSimuladoSetup(){
     const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
     const js = await res.json();
     const arr = js && (js.topics || js.topicos) ? (js.topics || js.topicos) : [];
-    if (Array.isArray(arr)) arr.forEach(t => { const o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+    if (Array.isArray(arr)) arr.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
   } catch(e){ console.warn('sim topics', e); }
   document.getElementById('startSimBtn').addEventListener('click', ()=> {
     const topic = document.getElementById('simTopic').value;
@@ -400,15 +522,15 @@ async function showSimuladoSetup(){
 async function startSimulado(cfg){
   SIM = { pool:[], idx:0, answers:[], timer:null, timeLeft:0, config:cfg };
   try {
-    const url = `${SCRIPT_URL}?action=getSimulado&qtd=${encodeURIComponent(cfg.size||20)}`;
+    const url = `${SCRIPT_URL}?action=getSimulado&qtd=${encodeURIComponent(cfg.size || 20)}`;
     const res = await fetch(url, {cache:'no-store'});
     const js = await res.json();
     let list = (js && js.ok && js.questoes) ? js.questoes : (Array.isArray(js) ? js : []);
     for (let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
-    SIM.pool = list.slice(0, Math.min(cfg.size||20, list.length));
+    SIM.pool = list.slice(0, Math.min(cfg.size || 20, list.length));
     SIM.answers = Array(SIM.pool.length).fill(null);
     SIM.idx = 0;
-    if (cfg.timed){ SIM.timeLeft = SIM.pool.length * 60; startSimTimer(); }
+    if (cfg.timed) { SIM.timeLeft = SIM.pool.length * 60; startSimTimer(); }
     renderSimuladoQuestion();
   } catch(e){ console.error('startSimulado err', e); document.getElementById('simArea').innerText = 'Erro ao iniciar simulado.'; }
 }
@@ -426,8 +548,8 @@ function startSimTimer(){
 function renderSimuladoQuestion(){
   const q = SIM.pool[SIM.idx];
   if (!q) { finishSimulado(); return; }
-  document.getElementById('simArea').innerHTML = `<div style="white-space:pre-wrap">${q_text(q)}</div>`;
-  const opts = document.getElementById('opts'); opts.innerHTML = '';
+  document.getElementById('simArea').innerHTML = `<div style="white-space:pre-wrap">${q_text(q)}</div><div id="simOpts" style="margin-top:8px" class="opts"></div>`;
+  const opts = document.getElementById('simOpts');
   ['A','B','C','D'].forEach(letter=>{
     const txt = q_option(q,letter);
     if (!txt) return;
@@ -446,7 +568,7 @@ function finishSimulado(){
   if (SIM.timer) { clearInterval(SIM.timer); SIM.timer = null; }
   const total = SIM.pool.length; let sc = 0; const details = [];
   for (let i=0;i<total;i++){
-    const q = SIM.pool[i]; const chosen = SIM.answers[i]; const correct = (q.correta || q.correta || q.correta || q.correta || q.resposta || '').toString().substr(0,1).toUpperCase();
+    const q = SIM.pool[i]; const chosen = SIM.answers[i]; const correct = (q.correta || q.resposta || '').toString().substr(0,1).toUpperCase();
     const ok = chosen && chosen.toUpperCase() === correct;
     if (ok) sc++;
     details.push({id:q.id||i+1,question:q_text(q),chosen:chosen||null,correct:correct||null,ok});
@@ -462,11 +584,12 @@ function reviewSimulado(jsonStr){
     const wrong = details.filter(d=>!d.ok);
     if (!wrong.length) { alert('Nenhum erro :-)'); return; }
     SIM.pool = wrong.map(w=> ({question:w.question, id:w.id}) );
-    SIM.idx = 0; renderSimuladoQuestion(); go('sim');
+    SIM.idx = 0; renderSimuladoQuestion();
+    go('sim');
   } catch(e){ console.error(e); alert('Erro ao revisar.'); }
 }
 
-/* ================ HISTORY ================ */
+/* ===================== HISTORY ===================== */
 function saveLocalResult(obj){
   const key = 'gcm_history_v1';
   const arr = JSON.parse(localStorage.getItem(key) || '[]');
@@ -488,26 +611,35 @@ function renderHistory(){
   });
 }
 
-/* ================ UTIL para questões (compatibilidade) ================ */
+/* ===================== UTIL (compatibilidade) ===================== */
 function q_text(q){ if(!q) return ''; return q.enunciado || q.pergunta || q.question || q.text || q.Question || ''; }
 function q_topic(q){ if(!q) return ''; return q.assunto || q.materia || q.topico || q.topic || ''; }
 function q_expl(q){ if(!q) return ''; return q.explicacao || q.explanation || q.resposta || q.explanation || ''; }
 function q_answer_letter(q){ const a = (q.correta || q.resposta || q.answer || '').toString().trim(); if (!a) return ''; return a.substr(0,1).toUpperCase(); }
-function q_option(q, letter){ letter = letter.toUpperCase(); if (!q) return ''; if (q[letter]) return q[letter]; if (q[letter.toLowerCase()]) return q[letter.toLowerCase()]; if (q.A && letter==='A') return q.A; if (q.B && letter==='B') return q.B; return ''; }
+function q_option(q, letter){ if (!q) return ''; const up = q[letter] || q[letter.toUpperCase()] || q[letter.toLowerCase()]; if (up) return up; if (q.A && letter==='A') return q.A; if (q.B && letter==='B') return q.B; if (q.C && letter==='C') return q.C; if (q.D && letter==='D') return q.D; return ''; }
+function q_answer_letter(q){ const a = (q.correta || q.resposta || q.answer || '').toString().trim(); if (!a) return ''; return a.substr(0,1).toUpperCase(); }
 
-/* ================ START ================ */
+/* ===================== UTIL DOM ===================== */
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ===================== INIT ===================== */
 (function init(){
-  // ensure demo info visible
-  document.getElementById('demoDurationLabel').innerText = `${DEMO_DAYS} dias`;
-  updateAccessLabel();
+  // sound button initial state
+  if (localStorage.getItem(SOUND_KEY) === null) localStorage.setItem(SOUND_KEY, '1');
+  updateSoundBtn();
+
+  // ensure audio resume on user gesture
+  window.addEventListener('pointerup', function resume(){ tryUnlockAudio(); window.removeEventListener('pointerup', resume); }, { once:true });
+
+  // set demo label duration if visible
   document.getElementById('quizSizeLabel').innerText = TEMPLATE_QUIZ_SIZE || 20;
-  // wire login open
-  document.getElementById('btnOpenLogin').addEventListener('click', ()=> openLogin());
-  // initial page
+  updateAccessLabel();
   go('home');
-  // clear expired demo on load
-  isDemoActive();
 })();
+
+/* helper used in a few places */
+function tryUnlockAudio(){ try { ensureAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){} }
+
 </script>
 </body>
 </html>
