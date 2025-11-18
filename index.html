@@ -226,6 +226,22 @@
   let demoTimer = null; let demoExpiresAt = null; let demoLocked = false; let demoSource = null; // 'server' or 'local'
   function isDemoLocked(){ return demoLocked; }
 
+  // ===== CORREÇÃO: função global go(target) adicionada (faltava) =====
+  window.go = function(target){
+    if (isDemoLocked()) return;
+    // remove active from all pages, add to target
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const tEl = document.getElementById(target);
+    if (tEl) tEl.classList.add('active');
+    // update tab buttons
+    document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
+    // lazy actions on page show
+    if (target === 'home') showBestRecord();
+    if (target === 'study') renderStudies();
+    if (target === 'cards') renderCards();
+    if (target === 'quiz') { if (!quizStarted) showTopicSelection(); }
+  };
+
   function showDemoBanner(remainingMs){
     const banner = document.getElementById('demoBanner');
     if (!banner) return;
