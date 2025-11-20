@@ -1,9 +1,10 @@
+<!-- Index.html — versão PAGA (botão "Tentar reconectar" removido; só fica "Acessar versão paga") -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Quiz Guarda Civil — App</title>
+  <title>Quiz Guarda Civil — App (Paga)</title>
   <meta name="theme-color" content="#1e3c72"/>
   <style>
     :root{ --bg1:#0f3b6b; --bg2:#1f6fb0; --card-bg: rgba(255,255,255,0.06); --muted: rgba(255,255,255,0.92); --accent: #00ff9d; --card-scale: 1.10; }
@@ -57,9 +58,7 @@
     .flash-back { transform: rotateY(180deg); background:rgba(0,0,0,0.12); color:#fff; }
     .flash-inner.flipped { transform: rotateY(180deg); }
 
-    /* demo banner + overlay */
-    .demo-banner { background: rgba(0,0,0,0.2); padding:6px 10px; border-radius:8px; font-weight:800; display:inline-flex; gap:8px; align-items:center; }
-    .demo-remaining { font-size:13px; color:#dfffe8; }
+    /* demo overlay styles retained for blocked paid app */
     .overlay-lock { position:fixed; inset:0; background:rgba(3,6,12,0.7); display:flex; align-items:center; justify-content:center; z-index:9999; }
     .overlay-card { background:#081a2b; padding:20px; border-radius:12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); max-width:420px; text-align:center; color:#fff; }
     .overlay-card h2{ margin:0 0 8px 0; }
@@ -90,17 +89,11 @@
       </div>
 
       <div class="controls">
-        <div id="demoBanner" class="demo-banner" style="display:none">
-          <div style="font-size:13px;">DEMO</div>
-          <div class="demo-remaining" id="demoRemaining">—</div>
-        </div>
         <button class="icon-btn" id="scaleDownBtn" title="Diminuir caixa">A−</button>
         <div class="scale-label" id="scaleLabel">x1.10</div>
         <button class="icon-btn" id="scaleUpBtn" title="Aumentar caixa">A+</button>
         <button class="icon-btn" id="fullscreenBtn" title="Tela cheia">⛶</button>
         <button class="btn" id="soundToggle">🔊 Som: On</button>
-        <!-- botão de compra visível -->
-        <button class="btn" id="buyBtn" title="Adquirir versão paga">💳 Comprar</button>
       </div>
     </div>
 
@@ -120,7 +113,7 @@
 
       <section id="study" class="page">
         <h3>Conteúdos de Estudo</h3>
-        <div id="studyList" class="study-list"></div>
+        <div id="studyList" class="study-list">Carregando...</div>
       </section>
 
       <section id="quiz" class="page">
@@ -165,27 +158,19 @@
 
   </div>
 
-  <!-- overlay lock inserted dynamically -->
-
 <script>
-  /* ===================== CONFIGURE AQUI ===================== */
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAEHXLI2sZ4XGoHIxN-c4fmWZ4kZx79vh-TmDw-zM-hxPRotXS-lsyUuSCd9EcZy1NRQ/exec';
+  /* ========== CONFIG ========== */
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby115c3BX_QjgAItgWpLCcJ0vGN_nXxK93GCXC6Q87mZu_zWRI4Y6jZVBQiqtM4OrSHkg/exec';
   const TEMPLATE_QUESTIONS = null;
-  const TEMPLATE_STUDIES = []; // se quiser conteúdo offline, coloque objetos { topico, conteudo }
+  const TEMPLATE_STUDIES = []; // opcional fallback
   const TEMPLATE_QUIZ_SIZE = 20;
 
-  /* ===== demo config ===== */
-  const PURCHASE_URL = 'https://seu-site-de-venda.com/checkout'; // <-- substitua pelo link de compra real
-  const DEVICE_ID_KEY = 'quiz_device_id';
-  const DEMO_LOCAL_KEY = 'quiz_demo_local'; // fallback quando servidor indisponível
-  const DEMO_DURATION_HOURS = 0.5; // **0.5 horas = 30 minutos** (editar aqui para alterar duração)
-
-  /* =========== estado e chaves =========== */
+  /* ========== KEYS / STATE ========== */
   let POOL = []; let currentIndex = 0; let score = 0; let errors = []; let quizStarted = false;
   const SOUND_KEY = 'quiz_sound_on'; const SCALE_KEY = 'quiz_card_scale'; const BEST_KEY = 'quiz_best_record';
   const scaleMin = 0.8, scaleMax = 1.6, scaleStep = 0.05;
 
-  /* ====== helpers compatibilidade ====== */
+  /* ====== UI HELPERS ====== */
   function q_text(q){ if (!q) return ''; return q.pergunta || q.perguntas || q.question || q.Question || q.Pergunta || ''; }
   function q_topic(q){ if (!q) return ''; return q.materia || q.topico || q.tópico || q.topic || ''; }
   function q_expl(q){ if (!q) return ''; return q.explicacao || q.explanation || q.Explicacao || q.resposta || q.respostas || q.answer || ''; }
@@ -222,184 +207,59 @@
   function playWrong(){ playTone(220,220,'sawtooth',0.08); }
 
   /* ===== navigation/pages ===== */
-  let demoTimer = null; let demoExpiresAt = null; let demoLocked = false; let demoSource = null; // 'server' or 'local'
-  function isDemoLocked(){ return demoLocked; }
-
-  // ===== CORREÇÃO: função global go(target) adicionada (faltava) =====
   window.go = function(target){
-    if (isDemoLocked()) return;
-    // remove active from all pages, add to target
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const tEl = document.getElementById(target);
     if (tEl) tEl.classList.add('active');
-    // update tab buttons
     document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.target === target));
-    // lazy actions on page show
     if (target === 'home') showBestRecord();
     if (target === 'study') renderStudies();
     if (target === 'cards') renderCards();
     if (target === 'quiz') { if (!quizStarted) showTopicSelection(); }
   };
 
-  function showDemoBanner(remainingMs){
-    const banner = document.getElementById('demoBanner');
-    if (!banner) return;
-    if (remainingMs <= 0) { banner.style.display='none'; return; }
-    banner.style.display='inline-flex';
-    document.getElementById('demoRemaining').innerText = formatRemaining(remainingMs);
-  }
-
-  function formatRemaining(ms){
-    if (ms <= 0) return '00:00:00';
-    const s = Math.floor(ms/1000); const h = Math.floor(s/3600); const m = Math.floor((s%3600)/60); const sec = s%60;
-    return `${pad(h)}:${pad(m)}:${pad(sec)}`;
-  }
-  function pad(n){ return n.toString().padStart(2,'0'); }
-
-  /* ===== deviceId helpers (server per-device) ===== */
-  function _makeDeviceId(){ return 'dev-' + Date.now() + '-' + Math.random().toString(36).slice(2,10); }
-  async function ensureDeviceId(){ let id = localStorage.getItem(DEVICE_ID_KEY); if (!id){ id = _makeDeviceId(); localStorage.setItem(DEVICE_ID_KEY,id); } return id; }
-  async function getDemoStatusServer(deviceId){
-    const res = await fetch(`${SCRIPT_URL}?action=getDemoStatus&deviceId=${encodeURIComponent(deviceId)}`, { cache:'no-store' });
-    return await res.json();
-  }
-  async function startDemoServer(deviceId, hours){
-    const res = await fetch(`${SCRIPT_URL}?action=startDemo&deviceId=${encodeURIComponent(deviceId)}&durationHours=${Number(hours)}`, { cache:'no-store' });
-    return await res.json();
-  }
-
-  async function checkAndStartDemo(){
-    // server-first but per-device: envia deviceId ao servidor
-    const deviceId = await ensureDeviceId();
-    try {
-      const js = await getDemoStatusServer(deviceId);
-      if (js && js.ok){
-        if (js.demoActive && js.expiresAt){
-          setDemoState(new Date(js.expiresAt), 'server');
-          return;
-        }
-        if (js.used){
-          // servidor indica que dispositivo já usou demo -> bloqueio permanente
-          lockApp({ permanent:true, title:'Demo já utilizada', message:'A demo deste dispositivo já foi utilizada. Para continuar, adquira a versão paga.' });
-          return;
-        }
-        // tentar criar demo para esse device (server)
-        const start = await startDemoServer(deviceId, DEMO_DURATION_HOURS);
-        if (start && start.ok && start.expiresAt){
-          setDemoState(new Date(start.expiresAt), 'server');
-          return;
-        }
-      }
-    } catch (err){
-      console.warn('Demo server endpoints indisponíveis, fallback local', err);
-    }
-
-    // fallback local (cliente)
-    const local = JSON.parse(localStorage.getItem(DEMO_LOCAL_KEY) || 'null');
-    if (local && local.expiresAt){
-      setDemoState(new Date(local.expiresAt), 'local');
-      return;
-    }
-    const now = Date.now(); const expires = new Date(now + DEMO_DURATION_HOURS*3600*1000);
-    localStorage.setItem(DEMO_LOCAL_KEY, JSON.stringify({startedAt: new Date(now).toISOString(), expiresAt: expires.toISOString()}));
-    setDemoState(expires, 'local');
-  }
-
-  function setDemoState(expiresDate, source){
-    demoSource = source || 'local';
-    demoExpiresAt = expiresDate instanceof Date ? expiresDate : new Date(expiresDate);
-    if (demoTimer) clearInterval(demoTimer);
-    const update = ()=>{
-      const now = new Date(); const rem = demoExpiresAt - now;
-      if (rem <= 0) { clearInterval(demoTimer); demoTimer = null; showDemoBanner(0); lockApp(); return; }
-      showDemoBanner(rem);
-    };
-    update();
-    demoTimer = setInterval(update, 1000);
-  }
-
-  function lockApp(opts){
-    demoLocked = true;
-    if (document.getElementById('overlayLock')) return;
-    const permanent = !!(opts && opts.permanent);
-    const title = (opts && opts.title) ? opts.title : (permanent ? 'Acesso bloqueado' : 'Demo expirado');
-    const msg = (opts && opts.message) ? opts.message : (permanent ? 'A demo já foi utilizada neste dispositivo.' : `Sua sessão demo de ${Math.round(DEMO_DURATION_HOURS*60)} minutos expirou e o aplicativo foi bloqueado.`);
-    const overlay = document.createElement('div'); overlay.id = 'overlayLock'; overlay.className = 'overlay-lock';
-    const card = document.createElement('div'); card.className='overlay-card';
-    card.innerHTML = `<h2>${title}</h2><p>${msg}</p><div style="display:flex;gap:8px;justify-content:center"><a class="linkbtn" href="${PURCHASE_URL}" target="_blank" rel="noopener noreferrer">Acessar versão paga</a>${permanent ? '' : '<a id="tryAgainBtn" class="linkbtn" href="#">Tentar reconectar</a>'}</div>`;
-    overlay.appendChild(card);
-    document.body.appendChild(overlay);
-
-    // disable interactive controls visually & functionally
-    document.getElementById('appRoot')?.style && (document.getElementById('appRoot').style.filter = 'blur(1px)');
-    document.querySelectorAll('button,select').forEach(el => el.disabled = true);
-
-    if (!permanent){
-      const btn = document.getElementById('tryAgainBtn');
-      if (btn) btn.addEventListener('click', function(ev){
-        ev.preventDefault();
-        if (document.getElementById('overlayLock')) document.getElementById('overlayLock').remove();
-        document.getElementById('appRoot')?.style && (document.getElementById('appRoot').style.filter = '');
-        document.querySelectorAll('button,select').forEach(el => el.disabled = false);
-        demoLocked = false;
-        checkAndStartDemo();
-      });
-    }
-  }
-
-  function unlockAppClientSide(){
-    // only for dev: clears local demo and device id
-    localStorage.removeItem(DEMO_LOCAL_KEY);
-    localStorage.removeItem(DEVICE_ID_KEY);
-    if (document.getElementById('overlayLock')) document.getElementById('overlayLock').remove();
-    document.getElementById('appRoot')?.style && (document.getElementById('appRoot').style.filter = '');
-    document.querySelectorAll('button,select').forEach(el => el.disabled = false);
-    demoLocked = false;
-    checkAndStartDemo();
-  }
-  window.__unlockDemoForDev = unlockAppClientSide; // debug helper (remove in production)
-
-  /* ====== ESTUDOS: função que faltava (corrigida) ====== */
+  /* ===== STUDIES (corrigido/robusto) ===== */
   async function renderStudies(){
-    if (isDemoLocked()) return;
     const container = document.getElementById('studyList');
-    if (!container) return;
-    container.innerHTML = '';
+    container.innerHTML = 'Carregando...';
     try {
-      const res = await fetch(`${SCRIPT_URL}?action=getStudies`, { cache:'no-store' });
+      const res = await fetch(`${SCRIPT_URL}?action=getStudies`, { cache: 'no-store' });
       const js = await res.json();
       if (js && js.ok && js.studies && Array.isArray(js.studies) && js.studies.length){
+        container.innerHTML = '';
         js.studies.forEach((s,i)=>{
-          const d = document.createElement('details'); d.className='summary';
-          const sum = document.createElement('summary'); sum.innerText = (s.topico || s.topic || `Tópico ${i+1}`);
+          const d = document.createElement('details'); d.className = 'summary';
+          const sum = document.createElement('summary'); sum.innerText = s.topico || s.topic || `Tópico ${i+1}`;
           d.appendChild(sum);
-          const div = document.createElement('div'); div.style.padding = '8px 6px'; div.style.color = '#dfeff5';
-          div.innerHTML = linkify(s.conteudo || s.texto || s.conteudo || s.content || '');
+          const div = document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5';
+          div.innerHTML = linkify(s.conteudo || s.texto || s.resposta || '');
           d.appendChild(div);
           container.appendChild(d);
         });
         return;
       }
-    } catch(e){
-      console.warn('Erro ao buscar estudos', e);
+    } catch (err){
+      console.warn('Erro ao buscar estudos via SCRIPT_URL:', err);
     }
-    // fallback para TEMPLATE_STUDIES (se você quiser conteúdo offline)
-    if (!TEMPLATE_STUDIES || !Array.isArray(TEMPLATE_STUDIES) || TEMPLATE_STUDIES.length === 0){
-      container.innerHTML = '<div class="small">Nenhum conteúdo de estudo (adicione aba "Estudos" com colunas: Tópico | Conteúdo).</div>';
+
+    if (Array.isArray(TEMPLATE_STUDIES) && TEMPLATE_STUDIES.length){
+      container.innerHTML = '';
+      TEMPLATE_STUDIES.forEach((s,i)=>{
+        const d = document.createElement('details'); d.className='summary';
+        const sum = document.createElement('summary'); sum.innerText = s.topico || s.titulo || `Tópico ${i+1}`;
+        d.appendChild(sum);
+        const div = document.createElement('div'); div.style.padding='8px 6px'; div.style.color='#dfeff5';
+        div.innerHTML = linkify(s.conteudo || s.conteudo || '');
+        d.appendChild(div);
+        container.appendChild(d);
+      });
       return;
     }
-    TEMPLATE_STUDIES.forEach((s,i)=>{
-      const d = document.createElement('details'); d.className='summary';
-      const sum = document.createElement('summary'); sum.innerText = s.topico || s.title || `Tópico ${i+1}`;
-      d.appendChild(sum);
-      const div = document.createElement('div'); div.style.padding = '8px 6px'; div.style.color = '#dfeff5';
-      div.innerHTML = linkify(s.conteudo || s.content || '');
-      d.appendChild(div);
-      container.appendChild(d);
-    });
+
+    container.innerHTML = '<div class="small">Nenhum conteúdo de estudo disponível. Verifique se a aba "<strong>Estudos</strong>" existe na planilha ou atualize o Apps Script para apontar para a planilha correta.</div>';
   }
 
-  /* ===== quiz (idêntico ao anterior) ===== */
+  /* ===== topics + quiz loading ===== */
   const quizSizeLabel = document.getElementById('quizSizeLabel');
   quizSizeLabel.innerText = TEMPLATE_QUIZ_SIZE || 20;
   const topicSelect = document.getElementById('topicSelect');
@@ -413,15 +273,15 @@
   const progressText = document.getElementById('progressText');
   const btnRestart = document.getElementById('btnRestart');
 
-  loadTopicBtn.addEventListener('click', ()=> { if (isDemoLocked()) return; loadTopicQuestions(topicSelect.value); });
-  nextBtn.addEventListener('click', ()=> { if (!quizStarted || isDemoLocked()) return; currentIndex++; renderQuestion(); });
+  loadTopicBtn.addEventListener('click', ()=> { loadTopicQuestions(topicSelect.value); });
+  nextBtn.addEventListener('click', ()=> { if (!quizStarted) return; currentIndex++; renderQuestion(); });
 
   async function showTopicSelection(){
     populateTopicSelect(['Todos']);
     try {
       const res = await fetch(`${SCRIPT_URL}?action=getTopics`, {cache:'no-store'});
       const js = await res.json();
-      if (js && js.ok && js.topics) { populateTopicSelect(js.topics || []); return; } else { console.warn('getTopics returned no topics', js); }
+      if (js && js.ok && js.topics) { populateTopicSelect(js.topics || []); return; }
     } catch (e) { console.warn('Erro fetch topics', e); }
   }
   function populateTopicSelect(topics){ topicSelect.innerHTML = ''; const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll); if (topics && topics.length){ topics.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o); }); } }
@@ -475,7 +335,7 @@
   }
 
   function selectOption(letter){
-    if (!quizStarted || isDemoLocked()) return;
+    if (!quizStarted) return;
     const q = POOL[currentIndex];
     const correct = q_answer_letter(q);
     const chosen = letter.toUpperCase();
@@ -506,68 +366,45 @@
 
   /* ====== CARTÕES (forçando endpoint getCards) ====== */
   async function renderCards(){
-    if (isDemoLocked()) return;
     const container = document.getElementById('cardsContainer');
     container.innerHTML = '';
-    // nome da aba que você criou (exato). Se usar outro nome, troque aqui.
     const sheetName = 'cartões';
     const encoded = encodeURIComponent(sheetName);
     const endpointsTried = [];
     try {
-      // 1) tenta endpoint getCards (específico)
       const urlCards = `${SCRIPT_URL}?action=getCards&sheet=${encoded}`;
       endpointsTried.push(urlCards);
-      console.log('Tentando endpoint (getCards):', urlCards);
       let res = await fetch(urlCards, {cache:'no-store'});
       let js = await res.json();
-      console.log('Resposta getCards:', js);
       let list = null;
-      if (js && js.ok && js.cards && Array.isArray(js.cards) && js.cards.length) {
-        list = js.cards;
-      } else if (js && js.ok && Array.isArray(js)) {
-        list = js;
-      } else if (js && js.ok && js.sheet && js.sheet.rows && Array.isArray(js.sheet.rows) && js.sheet.rows.length) {
-        // caso getSheetByName retorne sheet
-        list = js.sheet.rows;
-      }
-      // 2) se não encontrou nada, tenta getQuestionsBySheet
-      if (!list || !list.length) {
+      if (js && js.ok && js.cards && Array.isArray(js.cards) && js.cards.length) list = js.cards;
+      else if (js && js.ok && Array.isArray(js)) list = js;
+      else if (js && js.ok && js.sheet && js.sheet.rows && Array.isArray(js.sheet.rows) && js.sheet.rows.length) list = js.sheet.rows;
+
+      if (!list || !list.length){
         const urlQSheet = `${SCRIPT_URL}?action=getQuestionsBySheet&sheet=${encoded}`;
         endpointsTried.push(urlQSheet);
-        console.log('getCards vazio — tentando getQuestionsBySheet:', urlQSheet);
         res = await fetch(urlQSheet, {cache:'no-store'});
         js = await res.json();
-        console.log('Resposta getQuestionsBySheet:', js);
-        if (js && js.ok && js.questions && Array.isArray(js.questions) && js.questions.length) {
-          list = js.questions;
-        } else if (js && js.ok && Array.isArray(js)) {
-          list = js;
-        } else if (js && js.ok && js.cards && Array.isArray(js.cards)) {
-          list = js.cards;
-        }
-      }
-      // 3) fallback para getAllQuestions (último recurso)
-      if (!list || !list.length) {
-        const urlAll = `${SCRIPT_URL}?action=getAllQuestions`;
-        endpointsTried.push(urlAll);
-        console.log('Ainda vazio — tentando getAllQuestions:', urlAll);
-        res = await fetch(urlAll, {cache:'no-store'});
-        js = await res.json();
-        console.log('Resposta getAllQuestions:', js);
-        if (js && js.ok && js.questions && Array.isArray(js.questions) && js.questions.length) {
-          list = js.questions;
-        }
+        if (js && js.ok && js.questions && Array.isArray(js.questions) && js.questions.length) list = js.questions;
+        else if (js && js.ok && Array.isArray(js)) list = js;
+        else if (js && js.ok && js.cards && Array.isArray(js.cards)) list = js.cards;
       }
 
-      console.log('Endpoints tentados:', endpointsTried);
+      if (!list || !list.length){
+        const urlAll = `${SCRIPT_URL}?action=getAllQuestions`;
+        endpointsTried.push(urlAll);
+        res = await fetch(urlAll, {cache:'no-store'});
+        js = await res.json();
+        if (js && js.ok && js.questions && Array.isArray(js.questions) && js.questions.length) list = js.questions;
+      }
+
       if (!list || list.length === 0) {
         container.innerHTML = '<div class="small">Nenhum cartão disponível na aba "<strong>cartões</strong>". Verifique o nome da aba e os cabeçalhos (pergunta | resposta).</div>';
         return;
       }
 
-      // Se list é array de arrays (planilha bruta), transforma em objetos simples
       if (Array.isArray(list[0]) && !list[0].pergunta && !list[0].question) {
-        // assume primeira linha header
         const headers = list[0].map(h => (h===null? '': h.toString()));
         const rows = list.slice(1);
         const mapped = rows.map(row=>{
@@ -579,7 +416,6 @@
         return;
       }
 
-      // já temos objetos — normaliza e cria cartões
       makeCards(list);
     } catch(e){
       console.error('Erro renderCards:', e);
@@ -591,13 +427,8 @@
     const container = document.getElementById('cardsContainer');
     container.innerHTML = '';
     if (!list || list.length === 0) { container.innerHTML = '<div class="small">Nenhum cartão disponível.</div>'; return; }
-    // shuffle
     for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
     list.forEach((q, idx)=>{
-      // Suporta formatos variados:
-      // - q.pergunta / q.resposta
-      // - q.question / q.explanation
-      // - objetos simples com colunas nomeadas
       const frontText = (q.pergunta || q.perguntas || q.question || q[Object.keys(q).find(k=>/perg/i.test(k))] || '').toString();
       const topicText = (q.topico || q.tópico || q.materia || q.categoria || q.topic || '').toString();
       const backText = (q.resposta || q.respostas || q.explanation || q.explicacao || q.answer || q[Object.keys(q).find(k=>/resp/i.test(k))] || '').toString();
@@ -617,6 +448,34 @@
     });
   }
 
+  /* ===== overlay lock (APENAS link para versão paga) ===== */
+  function lockApp(opts){
+    // opts can be { permanent:true, title:'...', message:'...' }
+    if (document.getElementById('overlayLock')) return;
+    const permanent = !!(opts && opts.permanent);
+    const title = (opts && opts.title) ? opts.title : (permanent ? 'Acesso bloqueado' : 'Acesso restrito');
+    const msg = (opts && opts.message) ? opts.message : (permanent ? 'A demo já foi utilizada neste dispositivo.' : 'Acesso restrito. Adquira a versão paga para continuar.');
+    const overlay = document.createElement('div'); overlay.id = 'overlayLock'; overlay.className = 'overlay-lock';
+    const card = document.createElement('div'); card.className='overlay-card';
+    card.innerHTML = `<h2>${title}</h2><p>${msg}</p><div style="display:flex;gap:8px;justify-content:center"><a class="linkbtn" href="${PURCHASE_URL}" target="_blank" rel="noopener noreferrer">Acessar versão paga</a></div>`;
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    // disable interactive controls visually & functionally
+    document.getElementById('appRoot')?.style && (document.getElementById('appRoot').style.filter = 'blur(1px)');
+    document.querySelectorAll('button,select').forEach(el => el.disabled = true);
+  }
+
+  /* Dev helper (keeps ability to unlock during local testing) */
+  function unlockAppClientSide(){
+    localStorage.removeItem('quiz_demo_local');
+    localStorage.removeItem('quiz_device_id');
+    if (document.getElementById('overlayLock')) document.getElementById('overlayLock').remove();
+    document.getElementById('appRoot')?.style && (document.getElementById('appRoot').style.filter = '');
+    document.querySelectorAll('button,select').forEach(el => el.disabled = false);
+  }
+  window.__unlockDemoForDev = unlockAppClientSide;
+
   /* ===== inicialização ===== */
   (function init(){
     const cssScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1.10;
@@ -624,23 +483,13 @@
     if (window.innerWidth <= 520) localStorage.setItem(SCALE_KEY, '1.10');
     setScale(readSavedScale());
 
-    // start demo check (server-first, per-device)
-    checkAndStartDemo();
-
-    // carregar estudos inicialmente (ou quando aba for aberta)
+    // Chamadas iniciais
     renderStudies();
     showTopicSelection();
     showBestRecord();
     window.addEventListener('click', function unlock(){ try{ ensureAudio(); }catch(e){} window.removeEventListener('click', unlock); }, { once:true });
     document.getElementById('quizSizeLabel').innerText = TEMPLATE_QUIZ_SIZE || 20;
-
-    // buy button
-    document.getElementById('buyBtn').addEventListener('click', ()=> { window.open(PURCHASE_URL, '_blank', 'noopener'); });
-
-    // expose a debug unlock helper on window for dev (ONLY for testing)
-    window.__unlockDemoForDev = unlockAppClientSide;
   })();
-
 </script>
 </body>
 </html>
