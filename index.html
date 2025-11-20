@@ -274,73 +274,58 @@
   function populateTopicSelect(topics){ topicSelect.innerHTML = ''; const optAll = document.createElement('option'); optAll.value='Todos'; optAll.textContent='Todos'; topicSelect.appendChild(optAll); if (topics && topics.length){ topics.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; topicSelect.appendChild(o); }); } }
   async function loadTopicQuestions(topic){ qEl.innerText = 'Carregando perguntas...'; try { const encoded = encodeURIComponent(topic || 'Todos'); const res = await fetch(`${SCRIPT_URL}?action=getQuestionsByTopic&topic=${encoded}`, {cache:'no-store'}); const js = await res.json(); let data = (js && js.ok && js.questions) ? js.questions.slice() : []; if (!data.length && TEMPLATE_QUESTIONS && TEMPLATE_QUESTIONS.length){ data = TEMPLATE_QUESTIONS.slice(0, TEMPLATE_QUIZ_SIZE); } POOL = data.slice(0, TEMPLATE_QUIZ_SIZE); currentIndex = 0; score = 0; errors = []; quizStarted = true; btnRestart.style.display = 'none'; renderQuestion(); } catch (err){ console.error('Erro ao carregar questões:', err); qEl.innerText = 'Erro ao carregar questões. Verifique a conexão.'; } }
 
-function renderQuestion() {
+ function renderQuestion(){
     explainEl.style.display = 'none';
     nextBtn.disabled = true;
-
     if (!POOL || POOL.length === 0) {
-        qEl.innerText = 'Nenhuma questão disponível.';
-        optsDiv.innerHTML = '';
-        return;
+      qEl.innerText = 'Nenhuma questão disponível. Carregue outro tópico ou verifique a planilha.';
+      optsDiv.innerHTML = '';
+      progressBar.style.width = '0%';
+      progressInfo.innerText = '0 / 0';
+      progressText.innerText = '';
+      btnRestart.style.display = 'inline-block';
+      quizStarted = false;
+      return;
     }
-
-    if (currentIndex >= POOL.length) {
-        finishQuiz();
-        return;
-    }
-
+    if (currentIndex >= POOL.length) { finishQuiz(); return; }
     const q = POOL[currentIndex];
-
-    qEl.innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`;
+    qEl.style.opacity = 0;
+    setTimeout(()=>{ qEl.innerText = `📘 ${q_topic(q) || ''}\n${q_text(q)}`; qEl.style.opacity = 1; }, 120);
 
     optsDiv.innerHTML = '';
-
     ['A','B','C','D'].forEach(letter => {
-        const txt = q_option(q, letter);
-        if (!txt) return;
-
-        const btn = document.createElement('button');
-        btn.className = 'opt';
-        btn.id = 'opt_' + letter;
-        btn.innerText = `${letter}) ${txt}`;
-        btn.onclick = () => selectOption(letter);
-
-        optsDiv.appendChild(btn);
+      const txt = q_option(q, letter);
+      if (!txt) return;
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.id = 'opt_' + letter;
+      btn.innerText = `${letter}) ${txt}`;
+      btn.onclick = ()=> selectOption(letter);
+      optsDiv.appendChild(btn);
     });
 
     updateProgressUI();
-}
+  }
 
-function selectOption(letter) {
+  function selectOption(letter){
+    if (!quizStarted) return;
     const q = POOL[currentIndex];
     const correct = q_answer_letter(q);
     const chosen = letter.toUpperCase();
-
     document.querySelectorAll('.opt').forEach(el => el.disabled = true);
-
     if (correct) {
-        const okBtn = document.getElementById('opt_' + correct);
-        if (okBtn) okBtn.classList.add('correct');
+      const elCorrect = document.getElementById('opt_' + correct);
+      if (elCorrect) elCorrect.classList.add('correct');
     }
-
-    const chosenBtn = document.getElementById('opt_' + chosen);
-    if (chosenBtn) {
-        if (chosen === correct) {
-            chosenBtn.classList.add('correct');
-            score++;
-        } else {
-            chosenBtn.classList.add('wrong');
-            errors.push(q);
-        }
-    }
-
-    showExplanation(
-        chosen === correct ? '✅ Correto!' : `❌ Errado! Resposta correta: ${correct}`,
-        q_expl(q)
-    );
-
+    const elChosen = document.getElementById('opt_' + chosen);
+    if (elChosen) {
+      if (chosen === correct) { elChosen.classList.add('correct'); playCorrect(); score++; }
+      else { elChosen.classList.add('wrong'); playWrong(); errors.push(q); }
+    } else { if (chosen !== correct) { playWrong(); errors.push(q); } else playCorrect(); }
+    const title = (chosen === correct) ? '✅ Correto!' : ('❌ Errado! Resposta: ' + (correct || '—'));
+    showExplanation(title, q_expl(q));
     nextBtn.disabled = false;
-}
+  }
 
 function showExplanation(title, explanation) {
     explainEl.style.display = 'block';
