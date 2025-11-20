@@ -612,7 +612,7 @@
   (function init(){
     const cssScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1.10;
     if (localStorage.getItem(SCALE_KEY) === null) localStorage.setItem(SCALE_KEY, cssScale.toFixed(2));
-    if (window.innerWidth <= 520) localStorage.setItem(SCALE_KEY, '1.10');
+    if (window.innerWidth <= 520) localStorage.setItem(SCALE_KEY, '1.05');
     setScale(readSavedScale());
 
     // start demo check (server-first, per-device)
