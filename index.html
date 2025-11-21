@@ -156,19 +156,18 @@
           <div class="small" id="progressInfo">0 / 0</div>
         </div>
 
-       <div class="question" id="question">Aguardando escolha do tópico...</div>
+             <div class="question" id="question">Aguardando escolha do tópico...</div>
+        <div class="opts" id="opts"></div>
+        <div class="explain" id="explain" style="display:none"></div>
 
-<div class="opts" id="opts"></div>
+        <div class="next-area">
+          <div id="progressText" class="small"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="btnRestart" onclick="restartQuiz()" style="display:none">🔄 Reiniciar</button>
+            <button class="next-btn" id="nextBtn" disabled>Próxima ➜</button>
+          </div>
+        </div>
 
-<div class="explain" id="explain" style="display:none"></div>
-
-<div class="next-area">
-  <div id="progressText" class="small"></div>
-  <div style="display:flex;gap:8px">
-    <button class="btn" id="btnRestart" onclick="restartQuiz()" style="display:none">🔄 Reiniciar</button>
-    <button class="next-btn" id="nextBtn" disabled>Próxima ➜</button>
-  </div>
-</div>
 
 
       <section id="cards" class="page">
