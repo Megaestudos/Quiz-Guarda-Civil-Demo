@@ -634,6 +634,10 @@
     window.__unlockDemoForDev = unlockAppClientSide;
   })();
 
+  document.getElementById("buyBtn").addEventListener("click", () => {
+  window.open(PURCHASE_URL, "_blank", "noopener,noreferrer");
+});
+
 </script>
 </body>
 </html>
